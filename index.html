@@ -12,7 +12,6 @@
             --primary-blue: #1e3a8a;
             --primary-teal: #14b8a6;
             --primary-green: #10b981;
-            --accent-pink: #d946ef;
             --accent-red: #e11d48;
             --neutral-50: #f8fafc;
             --neutral-100: #f1f5f9;
@@ -34,53 +33,66 @@
             line-height: 1.6;
             min-height: 100vh;
         }
-        .hero-section { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px 40px; text-align: center; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .hero-section { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px 40px; text-align: center; background: white; box-shadow: var(--shadow-md); }
         .logo-image { width: 180px; height: 180px; border-radius: 50%; box-shadow: var(--shadow-xl); margin-bottom: 24px; }
         .main-title { font-size: clamp(3rem, 7vw, 5rem); font-weight: 800; color: var(--primary-blue); letter-spacing: 2px; margin-bottom: 16px; }
-        .main-subtitle { font-size: clamp(1rem, 2.5vw, 1.5rem); color: var(--neutral-700); font-weight: 500; max-width: 800px; line-height: 1.5; }
+        .main-subtitle { font-size: clamp(1rem, 2.5vw, 1.5rem); color: var(--neutral-700); font-weight: 500; max-width: 800px; }
         .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
         .search-section { background: white; border-radius: 20px; padding: 48px; box-shadow: var(--shadow-xl); margin: 0 auto 48px; max-width: 900px; }
         .search-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 48px; }
         .tab-button { background: var(--neutral-100); border: 2px solid transparent; padding: 24px 20px; font-size: 1rem; cursor: pointer; color: var(--neutral-600); border-radius: 16px; transition: all 0.3s ease; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
         .tab-button:hover { background: var(--neutral-200); transform: translateY(-2px); }
-        .tab-button.active { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%); color: white; border-color: var(--primary-blue); box-shadow: var(--shadow-lg); }
+        .tab-button.active { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%); color: white; box-shadow: var(--shadow-lg); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .form-group { margin-bottom: 28px; }
         label { display: block; margin-bottom: 12px; font-weight: 600; color: var(--neutral-700); font-size: 1.1rem; }
-        select { width: 100%; padding: 18px 24px; border: 2px solid var(--neutral-200); border-radius: 12px; font-size: 1.05rem; background: white; font-family: 'Inter', sans-serif; }
+        select { width: 100%; padding: 18px 24px; border: 2px solid var(--neutral-200); border-radius: 12px; font-size: 1.05rem; background: white; }
         select:focus { outline: none; border-color: var(--primary-teal); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1); }
         .search-button { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%); color: white; border: none; padding: 20px 40px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-lg); width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; }
         .search-button:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.4); }
         .results-section { display: none; gap: 24px; align-items: flex-start; }
         .results-section.show { display: flex; }
         .sidebar-nav { flex-shrink: 0; width: 320px; background: white; border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); }
+        .sidebar-nav h3 { font-size: 1.2rem; color: var(--primary-blue); margin-bottom: 20px; border-bottom: 2px solid var(--neutral-200); padding-bottom: 10px; }
+        .sidebar-category-title { font-weight: 600; color: var(--primary-blue); }
+        .sidebar-question-list { list-style: none; padding-left: 16px; margin-top: 8px; }
+        .sidebar-question-list a { display: block; padding: 8px; text-decoration: none; color: var(--neutral-700); border-radius: 8px; transition: all 0.2s ease; font-size: 0.9rem; }
+        .sidebar-question-list a:hover { background-color: var(--primary-teal); color: white; transform: translateX(4px); }
         .main-results-content { flex-grow: 1; background: white; border-radius: 16px; padding: 48px; box-shadow: var(--shadow-lg); }
+        .country-header { display: flex; align-items: center; gap: 24px; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 2px solid var(--neutral-200); }
+        .country-flag { font-size: 3rem; }
+        .country-name { font-size: 2.25rem; color: var(--primary-blue); font-weight: 700; }
+        .executive-summary { background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%); padding: 32px; border-radius: 16px; margin-bottom: 48px; border-left: 4px solid var(--primary-teal); }
+        .summary-item { margin-bottom: 16px; }
+        .summary-item strong { min-width: 180px; display: inline-block; }
         .requirement { padding: 28px 0; border-bottom: 1px solid var(--neutral-100); }
         .requirement-title { font-weight: 600; color: var(--neutral-800); margin-bottom: 16px; }
         .requirement-direct-answer { background: linear-gradient(135deg, rgba(30, 58, 138, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%); padding: 20px; border-radius: 12px; margin: 16px 0; border-left: 4px solid var(--primary-teal); color: var(--neutral-700); }
-        .detail-toggle, .source-toggle { background: none; border: 1px solid var(--neutral-300); color: var(--neutral-600); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; }
-        .detail-toggle:hover, .source-toggle:hover { background: var(--neutral-100); border-color: var(--primary-teal); color: var(--primary-teal); }
-        .requirement-source, .requirement-ampliada { display: none; margin-top: 16px; padding: 16px; background: var(--neutral-50); border-radius: 12px; border-left: 4px solid var(--primary-teal); white-space: pre-wrap; }
+        .requirement-detail { color: var(--neutral-600); white-space: pre-wrap; margin-top: 16px; }
+        .source-toggle { background: none; border: 1px solid var(--neutral-300); color: var(--neutral-600); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; }
+        .source-toggle:hover { background: var(--neutral-100); border-color: var(--primary-teal); color: var(--primary-teal); }
+        .requirement-source { display: none; margin-top: 16px; padding: 16px; background: var(--neutral-50); border-radius: 12px; border-left: 4px solid var(--primary-teal); white-space: pre-wrap; }
         .loading { text-align: center; padding: 80px; }
         .error { background: rgba(239, 68, 68, 0.1); color: #dc2626; padding: 24px; border-radius: 12px; border-left: 4px solid #dc2626; }
         #filter-checkbox-container { max-height: 400px; overflow-y: auto; background: var(--neutral-50); padding: 20px; border-radius: 12px; border: 1px solid var(--neutral-200); }
         .filter-category-title { font-weight: 700; color: var(--primary-blue); margin-top: 16px; padding-bottom: 4px; border-bottom: 1px solid var(--neutral-200); }
         .filter-item label { font-size: 0.95rem; display: flex; align-items: center; cursor: pointer; }
         .filter-item input { width: auto; margin-right: 12px; }
-        
-        /* New Styles for Comparison View */
         .comparison-card { background: white; border: 1px solid var(--neutral-200); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
-        .comparison-card-header { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--neutral-200); }
+        .comparison-card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--neutral-200); }
         .comparison-card-header h3 { color: var(--primary-blue); font-size: 1.5rem; margin: 0; }
         .comparison-card-directa { color: var(--neutral-700); margin-bottom: 16px; }
         .comparison-card-ampliada { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--neutral-200); color: var(--neutral-600); white-space: pre-wrap; }
         .comparison-card-footer { text-align: right; }
         .expand-info-button { background: none; border: none; color: var(--accent-red); font-weight: 600; cursor: pointer; padding: 8px 0; }
-        
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 600; color: white; }
+        .status-badge.yes { background-color: var(--primary-green); }
+        .status-badge.no { background-color: var(--neutral-600); }
         .main-footer { background: rgba(0, 0, 0, 0.3); color: white; padding: 32px 24px; margin-top: 80px; backdrop-filter: blur(10px); }
-        .footer-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        @media (max-width: 768px) { .search-tabs { grid-template-columns: 1fr; } .results-section { flex-direction: column; } .sidebar-nav { width: 100%; } }
+        .footer-content { max-width: 1200px; margin: 0 auto; text-align: center; }
+        @media (max-width: 992px) { .results-section { flex-direction: column; } .sidebar-nav { width: 100%; } }
+        @media (max-width: 768px) { .search-tabs { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -136,7 +148,7 @@
 
     <footer class="main-footer">
         <div class="footer-content">
-            <div class="footer-copyright">© 2025 IRENLyC - Todos los derechos reservados</div>
+            <p>© 2025 IRENLyC - Todos los derechos reservados</p>
         </div>
     </footer>
 
@@ -158,28 +170,15 @@
         });
 
         function addEventListeners() {
-            const mainContent = document.getElementById('main-results-content');
-            mainContent.addEventListener('click', function(event) {
+            document.getElementById('main-results-content').addEventListener('click', function(event) {
                 const sourceToggle = event.target.closest('.source-toggle');
                 if (sourceToggle) {
                     const sourceElement = document.getElementById(sourceToggle.dataset.target);
                     if (sourceElement) {
-                        sourceToggle.classList.toggle('active');
                         sourceElement.style.display = sourceElement.style.display === 'block' ? 'none' : 'block';
                     }
                     return;
                 }
-                const detailToggle = event.target.closest('.detail-toggle');
-                if (detailToggle) {
-                    const detailElement = document.getElementById(detailToggle.dataset.target);
-                    if (detailElement) {
-                        const isVisible = detailElement.style.display === 'block';
-                        detailElement.style.display = isVisible ? 'none' : 'block';
-                        detailToggle.textContent = isVisible ? 'Ver más...' : 'Ver menos';
-                    }
-                    return;
-                }
-                // NEW Listener for Comparison View expand button
                 const expandButton = event.target.closest('.expand-info-button');
                 if (expandButton) {
                     const targetElement = document.getElementById(expandButton.dataset.target);
@@ -199,123 +198,124 @@
             document.getElementById(`${tabName}-tab`).classList.add('active');
         }
 
+        // --- TAB 1: SEARCH BY COUNTRY ---
         async function searchByCountry() {
             const countryName = document.getElementById('country-select').value;
             if (!countryName) return alert('Por favor, seleccione un país.');
             showLoading();
             try {
-                const { data, error } = await supabaseClient.from('faq').select('*').eq('País', countryName).single();
-                if (error) throw error;
-                displayCountryResults(data);
+                const [faqRes, summaryRes] = await Promise.all([
+                    supabaseClient.from('faq').select('*').eq('País', countryName).single(),
+                    supabaseClient.from('resumen_ejecutivo').select('*').eq('País', countryName).single()
+                ]);
+                if (faqRes.error || summaryRes.error) throw new Error(faqRes.error?.message || summaryRes.error?.message);
+                displayCountryResults(faqRes.data, summaryRes.data);
             } catch (error) {
                 showError(`No se pudieron cargar los datos para ${countryName}.`);
             }
         }
 
-        function displayCountryResults(countryData) {
+        function displayCountryResults(faqData, summaryData) {
             const mainContent = document.getElementById('main-results-content');
             const sidebarNav = document.getElementById('sidebar-nav');
-            
-            let mainHtml = `<div class="country-header" style="display:flex; align-items:center; gap:16px; margin-bottom: 2rem;"><span style="font-size:3rem;">${countryFlags[countryData.País]}</span><h2>${countryData.País}</h2></div>`;
+            let mainHtml = `
+                <div class="country-header">
+                    <div class="country-flag">${countryFlags[faqData.País]}</div>
+                    <div><div class="country-name">${faqData.País}</div><div>${summaryData['Autoridad Regulatoria']}</div></div>
+                </div>
+                <div class="executive-summary">
+                    <h2><i class="fas fa-info-circle"></i> Resumen Ejecutivo</h2>
+                    <div class="summary-item"><strong>Autoridad:</strong> <span>${summaryData['Autoridad Regulatoria']}</span></div>
+                    <div class="summary-item"><strong>Sitio Web:</strong> <a href="${summaryData['Sitio web oficial']}" target="_blank" rel="noopener noreferrer">${summaryData['Sitio web oficial']}</a></div>
+                    <div class="summary-item"><strong>Email:</strong> <span>${summaryData['Correo de contacto']}</span></div>
+                </div>`;
             let sidebarHtml = `<h3><i class="fas fa-bars"></i> Navegación</h3>`;
-
             categories.forEach(category => {
                 const categoryQuestions = Object.keys(canonicalQuestions).filter(q => q.startsWith(category.id + '.'));
                 if (categoryQuestions.length === 0 || category.id === 7) return;
-
-                mainHtml += `<h3 id="category-${category.id}" style="margin-top: 40px; color: var(--primary-blue);">${category.name}</h3>`;
-                sidebarHtml += `<div class="sidebar-category-title">${category.name}</div><ul>`;
-                
+                mainHtml += `<h2 id="category-${category.id}" style="margin-top: 40px; color: var(--primary-blue); border-bottom: 2px solid var(--neutral-200); padding-bottom: 10px;">${category.name}</h2>`;
+                sidebarHtml += `<div class="sidebar-category"><div class="sidebar-category-title">${category.name}</div><ul class="sidebar-question-list">`;
                 categoryQuestions.forEach(qCode => {
                     const dbKey = `q_${qCode.replace(/\./g, '_')}`;
                     const anchorId = `question-${qCode.replace(/\./g, '-')}`;
                     sidebarHtml += `<li><a href="#${anchorId}">${qCode} ${canonicalQuestions[qCode]}</a></li>`;
-                    
                     mainHtml += `<div class="requirement" id="${anchorId}"><div class="requirement-title">${qCode} - ${canonicalQuestions[qCode]}</div>`;
-                    if (countryData[`${dbKey}_directa`]) mainHtml += `<div class="requirement-direct-answer">${countryData[`${dbKey}_directa`]}</div>`;
-                    if (countryData[`${dbKey}_ampliada`]) mainHtml += `<div class="requirement-ampliada" id="detail-${anchorId}">${countryData[`${dbKey}_ampliada`]}</div><button class="detail-toggle" data-target="detail-${anchorId}">Ver más...</button>`;
-                    if (countryData[`${dbKey}_fuente`]) mainHtml += `<button class="source-toggle" data-target="source-${anchorId}"><span class="icon"></span> Ver Fuente</button><div class="requirement-source" id="source-${anchorId}">${countryData[`${dbKey}_fuente`]}</div>`;
+                    if (faqData[`${dbKey}_directa`]) mainHtml += `<div class="requirement-direct-answer">${faqData[`${dbKey}_directa`]}</div>`;
+                    if (faqData[`${dbKey}_ampliada`]) mainHtml += `<div class="requirement-detail">${faqData[`${dbKey}_ampliada`]}</div>`;
+                    if (faqData[`${dbKey}_fuente`]) mainHtml += `<button class="source-toggle" data-target="source-${anchorId}">Ver Fuente</button><div class="requirement-source" id="source-${anchorId}">${faqData[`${dbKey}_fuente`]}</div>`;
                     mainHtml += `</div>`;
                 });
-                sidebarHtml += `</ul>`;
+                sidebarHtml += `</ul></div>`;
             });
-
             mainContent.innerHTML = mainHtml;
             sidebarNav.innerHTML = sidebarHtml;
             sidebarNav.style.display = 'block';
             document.getElementById('results-section').classList.add('show');
         }
 
-        // --- TAB 2: COMPARE BY REQUIREMENT (UPDATED) ---
+        // --- TAB 2: COMPARE BY REQUIREMENT ---
         async function searchByRequirement() {
             const requirementCode = document.getElementById('requirement-select').value;
             if (!requirementCode) return alert('Por favor, seleccione un requisito.');
             showLoading();
             try {
                 const dbKey = `q_${requirementCode.replace(/\./g, '_')}`;
-                // Fetch directa AND ampliada
-                const fields = `País, ${dbKey}_directa, ${dbKey}_ampliada`;
-
+                const hasBoolean = !noBooleanQuestions.includes(requirementCode);
+                let fields = `País, ${dbKey}_directa, ${dbKey}_ampliada`;
+                if (hasBoolean) fields += `, ${dbKey}_booleano`;
                 const { data, error } = await supabaseClient.from('faq').select(fields).order('País');
                 if (error) throw error;
-                
-                displayRequirementComparison(requirementCode, data);
+                displayRequirementComparison(requirementCode, data, hasBoolean);
             } catch (error) {
                 showError(`No se pudieron cargar los datos de comparación.`);
             }
         }
 
-        function displayRequirementComparison(reqCode, countries) {
+        function displayRequirementComparison(reqCode, countries, hasBoolean) {
             const mainContent = document.getElementById('main-results-content');
             const dbKey = `q_${reqCode.replace(/\./g, '_')}`;
-            
-            let html = `<div style="margin-bottom: 32px;"><h2 style="color: var(--primary-blue);">¿Cuáles son las normativas que rigen los ensayos clínicos?</h2></div><div>`;
-            
+            let html = `<div style="margin-bottom: 32px;"><h2 style="color: var(--primary-blue);">${canonicalQuestions[reqCode]}</h2></div><div>`;
             countries.forEach((country, index) => {
                 const directa = country[`${dbKey}_directa`] || 'Información no disponible.';
-                const ampliada = country[`${dbKey}_ampliada`] || null;
+                const ampliada = country[`${dbKey}_ampliada`];
                 const detailId = `detail-compare-${index}`;
-
+                let statusBadge = '';
+                if (hasBoolean) {
+                    const booleanValue = country[`${dbKey}_booleano`];
+                    if (booleanValue === true || booleanValue === 'TRUE') statusBadge = '<span class="status-badge yes">✓ SÍ</span>';
+                    else if (booleanValue === false || booleanValue === 'FALSE') statusBadge = '<span class="status-badge no">✗ NO</span>';
+                }
                 html += `<div class="comparison-card">
                             <div class="comparison-card-header">
                                 <h3>${countryFlags[country.País]} ${country.País}</h3>
+                                ${statusBadge}
                             </div>
                             <div class="comparison-card-directa">${directa}</div>`;
-                
                 if (ampliada) {
                     html += `<div class="comparison-card-ampliada" id="${detailId}">${ampliada}</div>
                              <div class="comparison-card-footer">
                                  <button class="expand-info-button" data-target="${detailId}">Ampliar información</button>
                              </div>`;
                 }
-
-                html += `</div>`; // Close comparison-card
+                html += `</div>`;
             });
             html += `</div>`;
-
             mainContent.innerHTML = html;
-            document.getElementById('sidebar-nav').style.display = 'none';
-            document.getElementById('results-section').classList.add('show');
         }
 
         // --- TAB 3: ADVANCED FILTER ---
         async function searchByFilter() {
             const checkedInputs = document.querySelectorAll('#filter-checkbox-container input:checked');
             if (checkedInputs.length === 0) return alert('Por favor, seleccione al menos un criterio para filtrar.');
-            
             showLoading();
-            
             const selectedCriteria = Array.from(checkedInputs).map(input => ({ code: input.value, text: canonicalQuestions[input.value] }));
-
             try {
                 let query = supabaseClient.from('faq').select('País');
                 selectedCriteria.forEach(criterion => {
                     query = query.eq(`q_${criterion.code.replace(/\./g, '_')}_booleano`, true);
                 });
-
                 const { data: countries, error } = await query;
                 if (error) throw error;
-
                 displayFilteredCountries(countries, selectedCriteria);
             } catch (error) {
                 showError(`Ocurrió un error al realizar el filtro.`);
@@ -324,14 +324,12 @@
         
         function displayFilteredCountries(countries, criteria) {
             const mainContent = document.getElementById('main-results-content');
-            let html = `<h2 style="color: var(--primary-blue); margin-bottom: 2rem;">Resultados del Filtro Avanzado</h2>`;
-
-            html += `<div style="background: var(--neutral-50); padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+            let html = `<h2 style="color: var(--primary-blue); margin-bottom: 2rem;">Resultados del Filtro Avanzado</h2>
+                        <div style="background: var(--neutral-50); padding: 20px; border-radius: 12px; margin-bottom: 24px;">
                         <h4 style="margin-bottom: 12px;">Países que cumplen con TODOS los siguientes criterios:</h4>
                         <ul style="list-style-type: none; padding-left: 0;">`;
-            criteria.forEach(c => { html += `<li style="margin-bottom: 4px;"><i class="fas fa-check-circle" style="color: var(--primary-green); margin-right: 8px;"></i>${c.text}</li>`; });
+            criteria.forEach(c => { html += `<li><i class="fas fa-check-circle" style="color: var(--primary-green); margin-right: 8px;"></i>${c.text}</li>`; });
             html += `</ul></div>`;
-
             if (countries.length > 0) {
                 html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">`;
                 countries.forEach(country => {
@@ -344,7 +342,6 @@
             } else {
                 html += `<div class="error" style="background: rgba(251, 191, 36, 0.1); color: #d97706; border-left-color: #f59e0b;">No se encontraron países que cumplan con todos los criterios seleccionados.</div>`;
             }
-
             mainContent.innerHTML = html;
         }
 
@@ -379,11 +376,12 @@
             });
             container.innerHTML = html;
         }
-
+        
         function showLoading() {
             const mainContent = document.getElementById('main-results-content');
+            const sidebarNav = document.getElementById('sidebar-nav');
             mainContent.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i><p>Cargando...</p></div>`;
-            document.getElementById('sidebar-nav').style.display = 'none';
+            sidebarNav.style.display = 'none';
             document.getElementById('results-section').classList.add('show');
         }
 
