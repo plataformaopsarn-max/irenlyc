@@ -53,7 +53,7 @@
         .search-button:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.4); }
         .results-section { display: none; gap: 24px; align-items: flex-start; }
         .results-section.show { display: flex; }
-        .sidebar-nav { flex-shrink: 0; width: 320px; background: white; border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); }
+        .sidebar-nav { flex-shrink: 0; width: 320px; background: white; border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); position: sticky; top: 24px; }
         .sidebar-nav h3 { font-size: 1.2rem; color: var(--primary-blue); margin-bottom: 20px; border-bottom: 2px solid var(--neutral-200); padding-bottom: 10px; }
         .sidebar-category-title { font-weight: 600; color: var(--primary-blue); }
         .sidebar-question-list { list-style: none; padding-left: 16px; margin-top: 8px; }
@@ -64,20 +64,28 @@
         .country-flag { font-size: 3rem; }
         .country-name { font-size: 2.25rem; color: var(--primary-blue); font-weight: 700; }
         .executive-summary { background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%); padding: 32px; border-radius: 16px; margin-bottom: 48px; border-left: 4px solid var(--primary-teal); }
-        .summary-item { margin-bottom: 16px; }
-        .summary-item strong { min-width: 180px; display: inline-block; }
+        .summary-item { margin-bottom: 16px; display: flex; align-items: flex-start; }
+        .summary-item strong { min-width: 120px; display: inline-block; color: var(--neutral-800); }
+        .summary-item a { color: var(--primary-blue); text-decoration: none; }
+        .summary-item a:hover { text-decoration: underline; }
         .requirement { padding: 28px 0; border-bottom: 1px solid var(--neutral-100); }
         .requirement-title { font-weight: 600; color: var(--neutral-800); margin-bottom: 16px; }
         .requirement-direct-answer { background: linear-gradient(135deg, rgba(30, 58, 138, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%); padding: 20px; border-radius: 12px; margin: 16px 0; border-left: 4px solid var(--primary-teal); color: var(--neutral-700); }
         .requirement-detail { color: var(--neutral-600); white-space: pre-wrap; margin-top: 16px; }
         .source-toggle { background: none; border: 1px solid var(--neutral-300); color: var(--neutral-600); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; }
         .source-toggle:hover { background: var(--neutral-100); border-color: var(--primary-teal); color: var(--primary-teal); }
-        .requirement-source { display: none; margin-top: 16px; padding: 16px; background: var(--neutral-50); border-radius: 12px; border-left: 4px solid var(--primary-teal); white-space: pre-wrap; }
+        .requirement-source { display: none; margin-top: 16px; padding: 16px; background: var(--neutral-50); border-radius: 12px; border-left: 4px solid var(--primary-teal); white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; }
+        .resource-card { background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .resource-card h4 { color: var(--primary-blue); margin-bottom: 8px; }
+        .resource-card p { margin-bottom: 12px; font-size: 0.95rem; }
+        .resource-card a { color: var(--primary-teal); font-weight: 600; text-decoration: none; }
+        .resource-card a:hover { text-decoration: underline; }
         .loading { text-align: center; padding: 80px; }
         .error { background: rgba(239, 68, 68, 0.1); color: #dc2626; padding: 24px; border-radius: 12px; border-left: 4px solid #dc2626; }
         #filter-checkbox-container { max-height: 400px; overflow-y: auto; background: var(--neutral-50); padding: 20px; border-radius: 12px; border: 1px solid var(--neutral-200); }
         .filter-category-title { font-weight: 700; color: var(--primary-blue); margin-top: 16px; padding-bottom: 4px; border-bottom: 1px solid var(--neutral-200); }
-        .filter-item label { font-size: 0.95rem; display: flex; align-items: center; cursor: pointer; }
+        .filter-item { display: block; margin: 8px 0; }
+        .filter-item label { font-size: 0.95rem; display: flex; align-items: center; cursor: pointer; font-weight: 400; }
         .filter-item input { width: auto; margin-right: 12px; }
         .comparison-card { background: white; border: 1px solid var(--neutral-200); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
         .comparison-card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--neutral-200); }
@@ -91,7 +99,7 @@
         .status-badge.no { background-color: var(--neutral-600); }
         .main-footer { background: rgba(0, 0, 0, 0.3); color: white; padding: 32px 24px; margin-top: 80px; backdrop-filter: blur(10px); }
         .footer-content { max-width: 1200px; margin: 0 auto; text-align: center; }
-        @media (max-width: 992px) { .results-section { flex-direction: column; } .sidebar-nav { width: 100%; } }
+        @media (max-width: 992px) { .results-section { flex-direction: column; } .sidebar-nav { width: 100%; position: static; } }
         @media (max-width: 768px) { .search-tabs { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -153,15 +161,53 @@
     </footer>
 
     <script>
-        // --- CONFIG & DATA ---
+        // --- CONFIG & DATA (ACTUALIZADO) ---
         const supabaseUrl = 'https://rhbudrqpetrzispcacyw.supabase.co';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoYnVkcnFwZXRyemlzcGNhY3l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1ODI4NTQsImV4cCI6MjA3NDE1ODg1NH0.6uQ2Hg1aLHAQoG3HwxJBeBbrFRGRxUilH-60CRNl3J8';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-        const categories = [ { id: 1, name: '1. Autoridades y Marco General' }, { id: 2, name: '2. Rol y Obligaciones del Patrocinador' }, { id: 3, name: '3. Autorización Inicial del Ensayo Clínico' }, { id: 4, name: '4. Gestión del Producto en Investigación (PI) y Muestras' }, { id: 5, name: '5. Conducción y Cierre del Ensayo' }, { id: 6, name: '6. Aspectos Específicos' }, { id: 7, name: '7. Recursos Prácticos' }];
-        const canonicalQuestions = { '1.1': '¿Cuál es la principal Autoridad Reguladora Nacional (ARN) para ensayos clínicos?', '1.2.1': '¿Cuáles son las normativas principales que rigen la investigación en salud?', '1.2.2': '¿Cuáles son las normativas principales que rigen la autorización de ensayos clínicos?', '1.3': '¿Se requiere la aprobación de un Comité de Ética en Investigación (CEI)?', '1.3.1': '¿La aprobación de un Comité de Ética en Investigación (CEI) debe ser previa a la presentación frente a la Autoridad Regulatoria?', '1.4': '¿Existe un registro nacional o sistema de acreditación para los CEI?', '1.5': '¿Qué tipo de investigaciones deben ser autorizadas previamente al inicio por la autoridad regulatoria?', '2.1': '¿Cómo define la normativa al "patrocinador" de un ensayo clínico?', '2.2': '¿Se requiere que el patrocinador tenga un representante legal o una entidad jurídica domiciliada en el país?', '2.2.1': '¿Qué requisitos debe cumplir el patrocinador para poder actuar como tal?', '2.2.2': '¿Qué requisitos debe cumplir el patrocinador si se actúa a través de una Organización de Investigación por Contrato (OIC / CRO)?', '2.3': '¿Existen requisitos específicos para la selección de sitios o investigadores?', '2.4': '¿Qué requisitos existen sobre seguros y compensación para los participantes?', '3.1': '¿Cuál es el contenido esencial del envío para la autorización inicial?', '3.2': '¿Cómo es el proceso de envío (plataforma, formato)?', '3.3': '¿Cuáles son los plazos regulatorios oficiales para la cronología de la revisión?', '3.4': '¿Se deben pagar tasas (aranceles) por la evaluación del ensayo?', '3.5': '¿Es obligatorio el registro público del ensayo clínico antes de su inicio?', '3.6': '¿Existen mecanismos de reconocimiento de evaluaciones o acreditaciones realizadas por autoridades regulatorias o éticas fuera del país?', '3.7': '¿Cuál es el orden secuencial de pasos que deben cumplir el patrocinador, la institución y el investigador principal para la autorización?', '4.1': '¿Cuáles son los requisitos de etiquetado para el PI?', '4.2': '¿Se requiere prueba de Buenas Prácticas de Manufactura (BPM/GMP) para el PI?', '4.3': '¿La aprobación del ensayo incluye la autorización para importar/usar el PI?', '4.4': 'Muestras Biológicas: ¿Cómo se regula su recolección, importación y exportación?', '5.1': 'Informes de Seguridad: ¿Requisitos para notificar Eventos Adversos Serios (EAS) y SUSARs?', '5.2': '¿Se requiere la presentación de informes anuales de seguridad (ej: DSUR)?', '5.3': 'Informes de Progreso: ¿Se requiere la presentación de informes de seguimiento periódicos?', '5.4': '¿Qué tipo de enmiendas al protocolo requieren aprobación previa de la ARN y/o del CEI?', '5.5': '¿Existen obligaciones sobre el acceso post-estudio al tratamiento en investigación?', '6.1': '¿Qué ley de protección de datos personales es aplicable a los ensayos clínicos?', '6.2': 'Vacunas: ¿Existen normativas o guías específicas para ensayos clínicos con vacunas?', '6.3': 'Muestras biológicas: ¿Existen normativas o guías específicas para la recolección y/o utilización?', '6.4': 'Ensayos clínicos para situaciones especiales: ¿Existen normativas o guías específicas?', '7.1': 'Normativas Clave de Referencia Rápida', '7.2': 'Formularios Oficiales', '7.3': 'Guías Técnicas y Sitios Web de Relevancia'};
+        const categories = [ { id: 1, name: '1. Autoridades y Marco General' }, { id: 2, name: '2. Rol y Obligaciones del Patrocinador' }, { id: 3, name: '3. Autorización Inicial del ensayo clínico' }, { id: 4, name: '4. Gestión del Producto en Investigación (PI) y Muestras' }, { id: 5, name: '5. Conducción y cierre del ensayo' }, { id: 6, name: '6. Regulaciones Específicas Adicionales' }, { id: 7, name: '7. Recursos Prácticos (Formularios, Guías y Normativas)' }];
+        
+        const canonicalQuestions = {
+            '1.1': '¿Cuál es la principal Autoridad Reguladora Nacional (ARN) para ensayos clínicos?',
+            '1.2': '¿Cuáles son las normativas principales que rigen la investigación en salud?',
+            '1.3': '¿Cuáles son las normativas principales que rigen la autorización de ensayos clínicos?',
+            '1.4': '¿Se requiere la aprobación de un Comité de Ética en Investigación (CEI)?',
+            '1.5': '¿La aprobación de un Comité de Ética en Investigación (CEI) debe ser previa a la presentación frente a la Autoridad Regulatoria?',
+            '1.6': '¿Existe un registro nacional o sistema de acreditación para los CEI?',
+            '1.7': '¿Se establece qué tipo de investigaciones deben ser autorizadas previamente al inicio por la autoridad regulatoria?',
+            '2.1': '¿La normativa define al patrocinador de un ensayo clínico?',
+            '2.2': '¿Se requiere que el patrocinador tenga un representante legal o una entidad jurídica domiciliada en el país?',
+            '2.3': '¿Se establecen los requisitos que debe cumplir el patrocinador para poder actuar como tal?',
+            '2.4': '¿Se establecen los requisitos que debe cumplir el patrocinador si se actúa a través de una Organización de Investigación por Contrato (OIC / CRO)?',
+            '2.5': '¿Existen requisitos específicos para la selección de sitios o investigadores?',
+            '2.6': '¿Se establecen requisitos sobre seguros y compensación para los participantes?',
+            '3.1': '¿Se establece cuál es el contenido esencial del envío para la autorización inicial?',
+            '3.2': '¿Se establece cómo es el proceso de envío (plataforma, formato)?',
+            '3.3': '¿Se definen cuáles son los plazos regulatorios oficiales para la cronología de la revisión?',
+            '3.4': '¿Se deben pagar tasas (aranceles) por la evaluación del ensayo?',
+            '3.5': '¿Es obligatorio el registro público del ensayo clínico antes de su inicio?',
+            '3.6': '¿Existen mecanismos de reconocimiento de evaluaciones o acreditaciones realizadas por autoridades regulatorias o éticas fuera del país?',
+            '3.7': '¿Cuál es el orden secuencial de pasos que deben cumplir el patrocinador, la institución y el investigador principal desde el principio del proceso hasta la autorización para el inicio del estudio?',
+            '4.1': '¿Se establecen requisitos de etiquetado para el PI?',
+            '4.2': '¿Se requiere prueba de Buenas Prácticas de Manufactura (BPM/GMP) para el PI?',
+            '4.3': '¿La aprobación del ensayo incluye la autorización para importar/usar el PI?',
+            '5.1': 'Informes de Seguridad: ¿Se establecen cuáles son los requisitos, canales, mecanismos y plazos para notificar EAS y RASI/SUSARs?',
+            '5.2': '¿Se requiere la presentación de informes anuales de seguridad?',
+            '5.3': '¿Se requiere la presentación de informes de seguimiento periódicos?',
+            '5.4': '¿Se establece qué tipo de enmiendas al protocolo requieren aprobación previa de la ARN y/o del CEI?',
+            '5.5': '¿Existen obligaciones sobre el acceso post-estudio al tratamiento en investigación?',
+            '6.1': '¿Existe una ley de protección de datos personales aplicable a los ensayos clínicos?',
+            '6.2': '¿Existen normativas o guías específicas para ensayos clínicos con vacunas?',
+            '6.3': '¿Existen normativas o guías específicas para la recolección y/o utilización de muestras para investigación?',
+            '6.4': 'Ensayos clínicos para situaciones especiales: ¿Existen normativas o guías específicas para otro tipo de ensayos clínicos?'
+        };
+
         const countryFlags = { 'Argentina': '🇦🇷', 'Bolivia': '🇧🇴', 'Brasil': '🇧🇷', 'Chile': '🇨🇱', 'Colombia': '🇨🇴', 'Costa Rica': '🇨🇷', 'Cuba': '🇨🇺', 'Ecuador': '🇪🇨', 'El Salvador': '🇸🇻', 'Guatemala': '🇬🇹', 'Haití': '🇭🇹', 'Honduras': '🇭🇳', 'Jamaica': '🇯🇲', 'México': '🇲🇽', 'Nicaragua': '🇳🇮', 'Panamá': '🇵🇦', 'Paraguay': '🇵🇾', 'Perú': '🇵🇪', 'República Dominicana': '🇩🇴', 'Trinidad y Tobago': '🇹🇹', 'Uruguay': '🇺🇾', 'Venezuela': '🇻🇪'};
-        const noBooleanQuestions = ['1.1', '1.2.1', '1.2.2', '2.1', '3.1', '3.2', '3.3', '3.7', '4.1', '4.4', '5.1', '7.1', '7.2', '7.3'];
+        
+        // --- CORRECCIÓN: Lista de exclusiones booleana ajustada a tu requerimiento ---
+        // Todas las preguntas tienen booleano excepto las listadas aquí.
+        const noBooleanQuestions = ['1.1', '1.2', '1.3', '3.7'];
 
         document.addEventListener('DOMContentLoaded', () => {
             addEventListeners();
@@ -204,49 +250,98 @@
             if (!countryName) return alert('Por favor, seleccione un país.');
             showLoading();
             try {
-                const [faqRes, summaryRes] = await Promise.all([
-                    supabaseClient.from('faq').select('*').eq('País', countryName).single(),
-                    supabaseClient.from('resumen_ejecutivo').select('*').eq('País', countryName).single()
+                // Se realizan 3 consultas en paralelo para mayor eficiencia
+                const [faqRes, summaryRes, linksRes] = await Promise.all([
+                    supabaseClient.from('faq').select('*').eq('pais', countryName).single(),
+                    supabaseClient.from('resumen_ejecutivo').select('*').eq('pais', countryName).single(),
+                    supabaseClient.from('enlaces').select('*').eq('pais', countryName).order('titulo')
                 ]);
-                if (faqRes.error || summaryRes.error) throw new Error(faqRes.error?.message || summaryRes.error?.message);
-                displayCountryResults(faqRes.data, summaryRes.data);
+
+                if (faqRes.error) throw new Error(`Error en FAQ: ${faqRes.error.message}`);
+                if (summaryRes.error) throw new Error(`Error en Resumen: ${summaryRes.error.message}`);
+                if (linksRes.error) throw new Error(`Error en Enlaces: ${linksRes.error.message}`);
+                
+                displayCountryResults(faqRes.data, summaryRes.data, linksRes.data);
+
             } catch (error) {
-                showError(`No se pudieron cargar los datos para ${countryName}.`);
+                showError(`No se pudieron cargar los datos para ${countryName}. Detalles: ${error.message}`);
             }
         }
 
-        function displayCountryResults(faqData, summaryData) {
+        function displayCountryResults(faqData, summaryData, linksData) {
             const mainContent = document.getElementById('main-results-content');
             const sidebarNav = document.getElementById('sidebar-nav');
+            
             let mainHtml = `
                 <div class="country-header">
-                    <div class="country-flag">${countryFlags[faqData.País]}</div>
-                    <div><div class="country-name">${faqData.País}</div><div>${summaryData['Autoridad Regulatoria']}</div></div>
+                    <div class="country-flag">${countryFlags[faqData.pais]}</div>
+                    <div>
+                        <div class="country-name">${faqData.pais}</div>
+                        <div>${summaryData.autoridad_regulatoria}</div>
+                    </div>
                 </div>
                 <div class="executive-summary">
                     <h2><i class="fas fa-info-circle"></i> Resumen Ejecutivo</h2>
-                    <div class="summary-item"><strong>Autoridad:</strong> <span>${summaryData['Autoridad Regulatoria']}</span></div>
-                    <div class="summary-item"><strong>Sitio Web:</strong> <a href="${summaryData['Sitio web oficial']}" target="_blank" rel="noopener noreferrer">${summaryData['Sitio web oficial']}</a></div>
-                    <div class="summary-item"><strong>Email:</strong> <span>${summaryData['Correo de contacto']}</span></div>
+                    <div class="summary-item"><strong>Autoridad:</strong> <span>${summaryData.autoridad_regulatoria || 'No disponible'}</span></div>
+                    <div class="summary-item"><strong>Sitio Web:</strong> <a href="${summaryData.sitio_web_oficial}" target="_blank" rel="noopener noreferrer">${summaryData.sitio_web_oficial || 'No disponible'}</a></div>
+                    <div class="summary-item"><strong>Email:</strong> <span>${summaryData.correo_contacto || 'No disponible'}</span></div>
+                    <div class="summary-item"><strong>Teléfonos:</strong> <span>${summaryData.telefonos || 'No disponible'}</span></div>
+                    <div class="summary-item"><strong>Domicilio:</strong> <span>${summaryData.domicilio || 'No disponible'}</span></div>
                 </div>`;
+            
             let sidebarHtml = `<h3><i class="fas fa-bars"></i> Navegación</h3>`;
+
             categories.forEach(category => {
                 const categoryQuestions = Object.keys(canonicalQuestions).filter(q => q.startsWith(category.id + '.'));
-                if (categoryQuestions.length === 0 || category.id === 7) return;
+                
+                // Si la categoría no tiene preguntas (como la 7 en el bucle principal), la omitimos
+                if (categoryQuestions.length === 0 && category.id !== 7) return;
+
                 mainHtml += `<h2 id="category-${category.id}" style="margin-top: 40px; color: var(--primary-blue); border-bottom: 2px solid var(--neutral-200); padding-bottom: 10px;">${category.name}</h2>`;
+                
+                // Construcción de la barra lateral
                 sidebarHtml += `<div class="sidebar-category"><div class="sidebar-category-title">${category.name}</div><ul class="sidebar-question-list">`;
-                categoryQuestions.forEach(qCode => {
-                    const dbKey = `q_${qCode.replace(/\./g, '_')}`;
-                    const anchorId = `question-${qCode.replace(/\./g, '-')}`;
-                    sidebarHtml += `<li><a href="#${anchorId}">${qCode} ${canonicalQuestions[qCode]}</a></li>`;
-                    mainHtml += `<div class="requirement" id="${anchorId}"><div class="requirement-title">${qCode} - ${canonicalQuestions[qCode]}</div>`;
-                    if (faqData[`${dbKey}_directa`]) mainHtml += `<div class="requirement-direct-answer">${faqData[`${dbKey}_directa`]}</div>`;
-                    if (faqData[`${dbKey}_ampliada`]) mainHtml += `<div class="requirement-detail">${faqData[`${dbKey}_ampliada`]}</div>`;
-                    if (faqData[`${dbKey}_fuente`]) mainHtml += `<button class="source-toggle" data-target="source-${anchorId}">Ver Fuente</button><div class="requirement-source" id="source-${anchorId}">${faqData[`${dbKey}_fuente`]}</div>`;
-                    mainHtml += `</div>`;
-                });
+                
+                if (category.id === 7) {
+                    // La categoría 7 (Recursos) se maneja de forma especial
+                    sidebarHtml += `<li><a href="#category-7">Ver todos los recursos</a></li>`;
+                } else {
+                    categoryQuestions.forEach(qCode => {
+                        sidebarHtml += `<li><a href="#question-${qCode.replace(/\./g, '-')}">${qCode} ${canonicalQuestions[qCode]}</a></li>`;
+                    });
+                }
                 sidebarHtml += `</ul></div>`;
+
+                // Construcción del contenido principal
+                if (category.id === 7) {
+                    // Renderizar los enlaces de la tabla 'enlaces'
+                    if (linksData && linksData.length > 0) {
+                        linksData.forEach(link => {
+                            mainHtml += `
+                                <div class="resource-card">
+                                    <h4><i class="fas fa-link"></i> ${link.titulo || 'Enlace'}</h4>
+                                    <p>${link['proposito_descripcion'] || 'Sin descripción.'}</p>
+                                    <a href="${link.enlace}" target="_blank" rel="noopener noreferrer">Acceder al recurso <i class="fas fa-external-link-alt"></i></a>
+                                </div>`;
+                        });
+                    } else {
+                        mainHtml += `<p>No hay recursos prácticos o enlaces disponibles para este país.</p>`;
+                    }
+                } else {
+                    // Renderizar las preguntas de la tabla 'faq'
+                    categoryQuestions.forEach(qCode => {
+                        const dbKey = `q_${qCode.replace(/\./g, '_')}`;
+                        const anchorId = `question-${qCode.replace(/\./g, '-')}`;
+                        mainHtml += `<div class="requirement" id="${anchorId}">
+                                        <div class="requirement-title">${qCode} - ${canonicalQuestions[qCode]}</div>`;
+                        if (faqData[`${dbKey}_directa`]) mainHtml += `<div class="requirement-direct-answer">${faqData[`${dbKey}_directa`]}</div>`;
+                        if (faqData[`${dbKey}_ampliada`]) mainHtml += `<div class="requirement-detail">${faqData[`${dbKey}_ampliada`]}</div>`;
+                        if (faqData[`${dbKey}_fuente`]) mainHtml += `<button class="source-toggle" data-target="source-${anchorId}"><i class="fas fa-book"></i> Ver Fuente</button><div class="requirement-source" id="source-${anchorId}">${faqData[`${dbKey}_fuente`]}</div>`;
+                        mainHtml += `</div>`;
+                    });
+                }
             });
+
             mainContent.innerHTML = mainHtml;
             sidebarNav.innerHTML = sidebarHtml;
             sidebarNav.style.display = 'block';
@@ -261,10 +356,12 @@
             try {
                 const dbKey = `q_${requirementCode.replace(/\./g, '_')}`;
                 const hasBoolean = !noBooleanQuestions.includes(requirementCode);
-                let fields = `País, ${dbKey}_directa, ${dbKey}_ampliada`;
+                let fields = `pais, ${dbKey}_directa, ${dbKey}_ampliada`;
                 if (hasBoolean) fields += `, ${dbKey}_booleano`;
-                const { data, error } = await supabaseClient.from('faq').select(fields).order('País');
+                
+                const { data, error } = await supabaseClient.from('faq').select(fields).order('pais');
                 if (error) throw error;
+                
                 displayRequirementComparison(requirementCode, data, hasBoolean);
             } catch (error) {
                 showError(`No se pudieron cargar los datos de comparación.`);
@@ -274,7 +371,7 @@
         function displayRequirementComparison(reqCode, countries, hasBoolean) {
             const mainContent = document.getElementById('main-results-content');
             const dbKey = `q_${reqCode.replace(/\./g, '_')}`;
-            let html = `<div style="margin-bottom: 32px;"><h2 style="color: var(--primary-blue);">${canonicalQuestions[reqCode]}</h2></div><div>`;
+            let html = `<div style="margin-bottom: 32px;"><h2 style="color: var(--primary-blue);">${canonicalQuestions[reqCode]}</h2><p>Comparativa entre todos los países disponibles.</p></div><div>`;
             countries.forEach((country, index) => {
                 const directa = country[`${dbKey}_directa`] || 'Información no disponible.';
                 const ampliada = country[`${dbKey}_ampliada`];
@@ -282,12 +379,12 @@
                 let statusBadge = '';
                 if (hasBoolean) {
                     const booleanValue = country[`${dbKey}_booleano`];
-                    if (booleanValue === true || booleanValue === 'TRUE') statusBadge = '<span class="status-badge yes">✓ SÍ</span>';
-                    else if (booleanValue === false || booleanValue === 'FALSE') statusBadge = '<span class="status-badge no">✗ NO</span>';
+                    if (booleanValue === true) statusBadge = '<span class="status-badge yes">✓ SÍ</span>';
+                    else if (booleanValue === false) statusBadge = '<span class="status-badge no">✗ NO</span>';
                 }
                 html += `<div class="comparison-card">
                             <div class="comparison-card-header">
-                                <h3>${countryFlags[country.País]} ${country.País}</h3>
+                                <h3>${countryFlags[country.pais]} ${country.pais}</h3>
                                 ${statusBadge}
                             </div>
                             <div class="comparison-card-directa">${directa}</div>`;
@@ -301,6 +398,8 @@
             });
             html += `</div>`;
             mainContent.innerHTML = html;
+            document.getElementById('sidebar-nav').style.display = 'none';
+            document.getElementById('results-section').classList.add('show');
         }
 
         // --- TAB 3: ADVANCED FILTER ---
@@ -310,7 +409,7 @@
             showLoading();
             const selectedCriteria = Array.from(checkedInputs).map(input => ({ code: input.value, text: canonicalQuestions[input.value] }));
             try {
-                let query = supabaseClient.from('faq').select('País');
+                let query = supabaseClient.from('faq').select('pais');
                 selectedCriteria.forEach(criterion => {
                     query = query.eq(`q_${criterion.code.replace(/\./g, '_')}_booleano`, true);
                 });
@@ -334,8 +433,8 @@
                 html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">`;
                 countries.forEach(country => {
                     html += `<div style="text-align: center; padding: 24px; border: 1px solid var(--neutral-200); border-radius: 12px;">
-                                <span style="font-size: 3rem;">${countryFlags[country.País]}</span>
-                                <h4 style="margin-top: 12px; color: var(--primary-blue);">${country.País}</h4>
+                                <span style="font-size: 3rem;">${countryFlags[country.pais]}</span>
+                                <h4 style="margin-top: 12px; color: var(--primary-blue);">${country.pais}</h4>
                              </div>`;
                 });
                 html += `</div>`;
@@ -343,6 +442,8 @@
                 html += `<div class="error" style="background: rgba(251, 191, 36, 0.1); color: #d97706; border-left-color: #f59e0b;">No se encontraron países que cumplan con todos los criterios seleccionados.</div>`;
             }
             mainContent.innerHTML = html;
+            document.getElementById('sidebar-nav').style.display = 'none';
+            document.getElementById('results-section').classList.add('show');
         }
 
         // --- POPULATION & UTILITIES ---
@@ -387,6 +488,8 @@
 
         function showError(message) {
             document.getElementById('main-results-content').innerHTML = `<div class="error"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+            document.getElementById('sidebar-nav').style.display = 'none';
+            document.getElementById('results-section').classList.add('show');
         }
     </script>
 </body>
