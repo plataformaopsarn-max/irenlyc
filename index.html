@@ -7,6 +7,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7/css/flag-icons.min.css"/>
+
     <style>
         :root {
             --primary-blue: #1e3a8a;
@@ -49,19 +52,28 @@
         label { display: block; margin-bottom: 12px; font-weight: 600; color: var(--neutral-700); font-size: 1.1rem; }
         select { width: 100%; padding: 18px 24px; border: 2px solid var(--neutral-200); border-radius: 12px; font-size: 1.05rem; background: white; }
         select:focus { outline: none; border-color: var(--primary-teal); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1); }
-        .search-button { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%); color: white; border: none; padding: 20px 40px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-lg); width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .search-button, .clear-button {
+            border: none; padding: 20px 30px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-lg); width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+        .search-button { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%); color: white; }
         .search-button:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.4); }
         .results-section { display: none; gap: 24px; align-items: flex-start; }
         .results-section.show { display: flex; }
         .sidebar-nav { flex-shrink: 0; width: 320px; background: white; border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); position: sticky; top: 24px; }
         .sidebar-nav h3 { font-size: 1.2rem; color: var(--primary-blue); margin-bottom: 20px; border-bottom: 2px solid var(--neutral-200); padding-bottom: 10px; }
-        .sidebar-category-title { font-weight: 600; color: var(--primary-blue); }
-        .sidebar-question-list { list-style: none; padding-left: 16px; margin-top: 8px; }
+        .sidebar-category { margin-bottom: 8px; }
+        .sidebar-category-title { font-weight: 600; color: var(--primary-blue); cursor: pointer; padding: 8px; border-radius: 8px; transition: background-color 0.2s ease; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-category-title:hover { background-color: var(--neutral-100); }
+        .sidebar-category-title .indicator-icon { transition: transform 0.3s ease; font-size: 0.8em; }
+        .sidebar-category.active .sidebar-category-title .indicator-icon { transform: rotate(90deg); }
+        .sidebar-question-list { list-style: none; padding-left: 16px; margin-top: 8px; display: none; }
+        .sidebar-category.active .sidebar-question-list { display: block; }
         .sidebar-question-list a { display: block; padding: 8px; text-decoration: none; color: var(--neutral-700); border-radius: 8px; transition: all 0.2s ease; font-size: 0.9rem; }
         .sidebar-question-list a:hover { background-color: var(--primary-teal); color: white; transform: translateX(4px); }
-        .main-results-content { flex-grow: 1; background: white; border-radius: 16px; padding: 48px; box-shadow: var(--shadow-lg); }
+        .main-results-content { flex-grow: 1; }
+        .results-content-inner { background: white; border-radius: 16px; padding: 48px; box-shadow: var(--shadow-lg); }
         .country-header { display: flex; align-items: center; gap: 24px; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 2px solid var(--neutral-200); }
-        .country-flag { font-size: 3rem; }
+        .country-flag { font-size: 3rem; line-height: 1; }
         .country-name { font-size: 2.25rem; color: var(--primary-blue); font-weight: 700; }
         .executive-summary { background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%); padding: 32px; border-radius: 16px; margin-bottom: 48px; border-left: 4px solid var(--primary-teal); }
         .summary-item { margin-bottom: 16px; display: flex; align-items: flex-start; }
@@ -80,16 +92,34 @@
         .resource-card p { margin-bottom: 12px; font-size: 0.95rem; }
         .resource-card a { color: var(--primary-teal); font-weight: 600; text-decoration: none; }
         .resource-card a:hover { text-decoration: underline; }
+        
+        /* --- NUEVO: Estilo para subtítulos de recursos --- */
+        .resource-subtitle {
+            font-size: 1.2rem; font-weight: 700; color: var(--primary-blue);
+            margin-top: 32px; margin-bottom: 16px; padding-bottom: 8px;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+        /* --- FIN --- */
+
         .loading { text-align: center; padding: 80px; }
         .error { background: rgba(239, 68, 68, 0.1); color: #dc2626; padding: 24px; border-radius: 12px; border-left: 4px solid #dc2626; }
         #filter-checkbox-container { max-height: 400px; overflow-y: auto; background: var(--neutral-50); padding: 20px; border-radius: 12px; border: 1px solid var(--neutral-200); }
-        .filter-category-title { font-weight: 700; color: var(--primary-blue); margin-top: 16px; padding-bottom: 4px; border-bottom: 1px solid var(--neutral-200); }
+        .filter-category { border-bottom: 1px solid var(--neutral-200); padding: 8px 0; }
+        .filter-category:last-child { border-bottom: none; }
+        .filter-category-title { font-weight: 700; color: var(--primary-blue); cursor: pointer; padding: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .filter-category-title .indicator-icon { transition: transform 0.3s ease; font-size: 0.8em; }
+        .filter-category.active .filter-category-title .indicator-icon { transform: rotate(90deg); }
+        .filter-items-list { display: none; padding: 8px 0 8px 16px; }
+        .filter-category.active .filter-items-list { display: block; }
         .filter-item { display: block; margin: 8px 0; }
         .filter-item label { font-size: 0.95rem; display: flex; align-items: center; cursor: pointer; font-weight: 400; }
         .filter-item input { width: auto; margin-right: 12px; }
-        .comparison-card { background: white; border: 1px solid var(--neutral-200); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+        .button-group { display: flex; gap: 16px; margin-top: 24px; }
+        .clear-button { background: var(--neutral-100); color: var(--neutral-700); border: 2px solid var(--neutral-200); box-shadow: none; }
+        .clear-button:hover { background: var(--neutral-200); transform: translateY(-2px); }
+        .comparison-card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow-md); }
         .comparison-card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--neutral-200); }
-        .comparison-card-header h3 { color: var(--primary-blue); font-size: 1.5rem; margin: 0; }
+        .comparison-card-header h3 { color: var(--primary-blue); font-size: 1.5rem; margin: 0; display: flex; align-items: center; gap: 12px;}
         .comparison-card-directa { color: var(--neutral-700); margin-bottom: 16px; }
         .comparison-card-ampliada { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--neutral-200); color: var(--neutral-600); white-space: pre-wrap; }
         .comparison-card-footer { text-align: right; }
@@ -97,10 +127,28 @@
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 600; color: white; }
         .status-badge.yes { background-color: var(--primary-green); }
         .status-badge.no { background-color: var(--neutral-600); }
+        #filtered-countries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
+        .filtered-country-card {
+            background: white; border-radius: 16px; padding: 24px; text-align: center;
+            box-shadow: var(--shadow-md); transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .filtered-country-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .filtered-country-card .fi-container { font-size: 3.5rem; margin-bottom: 16px; }
+        .filtered-country-card .country-title { color: var(--primary-blue); margin-bottom: 24px; }
+        .view-full-country-info-btn {
+            background: var(--primary-teal); color: white; border: none; padding: 12px 16px;
+            border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            transition: background-color 0.3s ease; display: flex; align-items: center;
+            justify-content: center; gap: 8px; width: 100%;
+        }
+        .view-full-country-info-btn:hover { background: var(--primary-blue); }
         .main-footer { background: rgba(0, 0, 0, 0.3); color: white; padding: 32px 24px; margin-top: 80px; backdrop-filter: blur(10px); }
         .footer-content { max-width: 1200px; margin: 0 auto; text-align: center; }
+        #back-to-top-btn { display: none; position: fixed; bottom: 30px; right: 30px; z-index: 99; border: none; outline: none; background-color: var(--primary-blue); color: white; cursor: pointer; padding: 0; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; box-shadow: var(--shadow-lg); transition: background-color 0.3s, opacity 0.3s, transform 0.3s; }
+        #back-to-top-btn:hover { background-color: var(--primary-teal); transform: translateY(-3px); }
         @media (max-width: 992px) { .results-section { flex-direction: column; } .sidebar-nav { width: 100%; position: static; } }
-        @media (max-width: 768px) { .search-tabs { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .search-tabs { grid-template-columns: 1fr; } .button-group { flex-direction: column; } }
     </style>
 </head>
 <body>
@@ -125,7 +173,7 @@
                     <label for="country-select"><i class="fas fa-globe-americas"></i> Seleccione un País:</label>
                     <select id="country-select">
                         <option value="">-- Seleccione un país --</option>
-                        <option value="Argentina">🇦🇷 Argentina</option><option value="Bolivia">🇧🇴 Bolivia</option><option value="Brasil">🇧🇷 Brasil</option><option value="Chile">🇨🇱 Chile</option><option value="Colombia">🇨🇴 Colombia</option><option value="Costa Rica">🇨🇷 Costa Rica</option><option value="Cuba">🇨🇺 Cuba</option><option value="Ecuador">🇪🇨 Ecuador</option><option value="El Salvador">🇸🇻 El Salvador</option><option value="Guatemala">🇬🇹 Guatemala</option><option value="Haití">🇭🇹 Haití</option><option value="Honduras">🇭🇳 Honduras</option><option value="Jamaica">🇯🇲 Jamaica</option><option value="México">🇲🇽 México</option><option value="Nicaragua">🇳🇮 Nicaragua</option><option value="Panamá">🇵🇦 Panamá</option><option value="Paraguay">🇵🇾 Paraguay</option><option value="Perú">🇵🇪 Perú</option><option value="República Dominicana">🇩🇴 República Dominicana</option><option value="Trinidad y Tobago">🇹🇹 Trinidad y Tobago</option><option value="Uruguay">🇺🇾 Uruguay</option><option value="Venezuela">🇻🇪 Venezuela</option>
+                        <option value="Argentina">Argentina</option><option value="Bolivia">Bolivia</option><option value="Brasil">Brasil</option><option value="Chile">Chile</option><option value="Colombia">Colombia</option><option value="Costa Rica">Costa Rica</option><option value="Cuba">Cuba</option><option value="Ecuador">Ecuador</option><option value="El Salvador">El Salvador</option><option value="Guatemala">Guatemala</option><option value="Haití">Haití</option><option value="Honduras">Honduras</option><option value="Jamaica">Jamaica</option><option value="México">México</option><option value="Nicaragua">Nicaragua</option><option value="Panamá">Panamá</option><option value="Paraguay">Paraguay</option><option value="Perú">Perú</option><option value="República Dominicana">República Dominicana</option><option value="Trinidad y Tobago">Trinidad y Tobago</option><option value="Uruguay">Uruguay</option><option value="Venezuela">Venezuela</option>
                     </select>
                 </div>
                 <button class="search-button" onclick="searchByCountry()"><i class="fas fa-search"></i><span>Consultar Requisitos</span></button>
@@ -144,7 +192,10 @@
                     <label for="filter-checkbox-container"><i class="fas fa-tasks"></i> Seleccione los criterios que deben cumplir los países:</label>
                     <div id="filter-checkbox-container"></div>
                 </div>
-                <button class="search-button" onclick="searchByFilter()"><i class="fas fa-filter"></i><span>Filtrar Países</span></button>
+                <div class="button-group">
+                    <button type="button" class="clear-button" onclick="clearFilters()"><i class="fas fa-times"></i> Limpiar Filtros</button>
+                    <button class="search-button" onclick="searchByFilter()"><i class="fas fa-filter"></i><span>Filtrar Países</span></button>
+                </div>
             </div>
         </div>
 
@@ -153,6 +204,9 @@
             <div id="main-results-content" class="main-results-content"></div>
         </div>
     </div>
+    
+    <!-- /* MODIFICADO: Se actualiza el onclick y el title del botón */ -->
+    <button onclick="scrollToSearch()" id="back-to-top-btn" title="Volver a la búsqueda"><i class="fas fa-arrow-up"></i></button>
 
     <footer class="main-footer">
         <div class="footer-content">
@@ -161,52 +215,20 @@
     </footer>
 
     <script>
-        // --- CONFIG & DATA (ACTUALIZADO) ---
         const supabaseUrl = 'https://rhbudrqpetrzispcacyw.supabase.co';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoYnVkcnFwZXRyemlzcGNhY3l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1ODI4NTQsImV4cCI6MjA3NDE1ODg1NH0.6uQ2Hg1aLHAQoG3HwxJBeBbrFRGRxUilH-60CRNl3J8';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-        const categories = [ { id: 1, name: '1. Autoridades y Marco General' }, { id: 2, name: '2. Rol y Obligaciones del Patrocinador' }, { id: 3, name: '3. Autorización Inicial del ensayo clínico' }, { id: 4, name: '4. Gestión del Producto en Investigación (PI) y Muestras' }, { id: 5, name: '5. Conducción y cierre del ensayo' }, { id: 6, name: '6. Regulaciones Específicas Adicionales' }, { id: 7, name: '7. Recursos Prácticos (Formularios, Guías y Normativas)' }];
+        const categories = [ { id: 1, name: '1. Autoridades y Marco General' }, { id: 2, name: '2. Rol y Obligaciones del Patrocinador' }, { id: 3, name: '3. Autorización Inicial del ensayo clínico' }, { id: 4, name: '4. Gestión del Producto en Investigación (PI)' }, { id: 5, name: '5. Conducción y cierre del ensayo' }, { id: 6, name: '6. Regulaciones Específicas Adicionales' }, { id: 7, name: '7. Recursos Prácticos (Formularios, Guías y Normativas)' }];
         
         const canonicalQuestions = {
-            '1.1': '¿Cuál es la principal Autoridad Reguladora Nacional (ARN) para ensayos clínicos?',
-            '1.2': '¿Cuáles son las normativas principales que rigen la investigación en salud?',
-            '1.3': '¿Cuáles son las normativas principales que rigen la autorización de ensayos clínicos?',
-            '1.4': '¿Se requiere la aprobación de un Comité de Ética en Investigación (CEI)?',
-            '1.5': '¿La aprobación de un Comité de Ética en Investigación (CEI) debe ser previa a la presentación frente a la Autoridad Regulatoria?',
-            '1.6': '¿Existe un registro nacional o sistema de acreditación para los CEI?',
-            '1.7': '¿Se establece qué tipo de investigaciones deben ser autorizadas previamente al inicio por la autoridad regulatoria?',
-            '2.1': '¿La normativa define al patrocinador de un ensayo clínico?',
-            '2.2': '¿Se requiere que el patrocinador tenga un representante legal o una entidad jurídica domiciliada en el país?',
-            '2.3': '¿Se establecen los requisitos que debe cumplir el patrocinador para poder actuar como tal?',
-            '2.4': '¿Se establecen los requisitos que debe cumplir el patrocinador si se actúa a través de una Organización de Investigación por Contrato (OIC / CRO)?',
-            '2.5': '¿Existen requisitos específicos para la selección de sitios o investigadores?',
-            '2.6': '¿Se establecen requisitos sobre seguros y compensación para los participantes?',
-            '3.1': '¿Se establece cuál es el contenido esencial del envío para la autorización inicial?',
-            '3.2': '¿Se establece cómo es el proceso de envío (plataforma, formato)?',
-            '3.3': '¿Se definen cuáles son los plazos regulatorios oficiales para la cronología de la revisión?',
-            '3.4': '¿Se deben pagar tasas (aranceles) por la evaluación del ensayo?',
-            '3.5': '¿Es obligatorio el registro público del ensayo clínico antes de su inicio?',
-            '3.6': '¿Existen mecanismos de reconocimiento de evaluaciones o acreditaciones realizadas por autoridades regulatorias o éticas fuera del país?',
-            '3.7': '¿Cuál es el orden secuencial de pasos que deben cumplir el patrocinador, la institución y el investigador principal desde el principio del proceso hasta la autorización para el inicio del estudio?',
-            '4.1': '¿Se establecen requisitos de etiquetado para el PI?',
-            '4.2': '¿Se requiere prueba de Buenas Prácticas de Manufactura (BPM/GMP) para el PI?',
-            '4.3': '¿La aprobación del ensayo incluye la autorización para importar/usar el PI?',
-            '5.1': 'Informes de Seguridad: ¿Se establecen cuáles son los requisitos, canales, mecanismos y plazos para notificar EAS y RASI/SUSARs?',
-            '5.2': '¿Se requiere la presentación de informes anuales de seguridad?',
-            '5.3': '¿Se requiere la presentación de informes de seguimiento periódicos?',
-            '5.4': '¿Se establece qué tipo de enmiendas al protocolo requieren aprobación previa de la ARN y/o del CEI?',
-            '5.5': '¿Existen obligaciones sobre el acceso post-estudio al tratamiento en investigación?',
-            '6.1': '¿Existe una ley de protección de datos personales aplicable a los ensayos clínicos?',
-            '6.2': '¿Existen normativas o guías específicas para ensayos clínicos con vacunas?',
-            '6.3': '¿Existen normativas o guías específicas para la recolección y/o utilización de muestras para investigación?',
-            '6.4': 'Ensayos clínicos para situaciones especiales: ¿Existen normativas o guías específicas para otro tipo de ensayos clínicos?'
+            '1.1': '¿Cuál es la principal Autoridad Reguladora Nacional (ARN) para ensayos clínicos?', '1.2': '¿Cuáles son las normativas principales que rigen la investigación en salud?', '1.3': '¿Cuáles son las normativas principales que rigen la autorización de ensayos clínicos?', '1.4': '¿Se requiere la aprobación de un Comité de Ética en Investigación (CEI)?', '1.5': '¿La aprobación de un Comité de Ética en Investigación (CEI) debe ser previa a la presentación frente a la Autoridad Regulatoria?', '1.6': '¿Existe un registro nacional o sistema de acreditación para los CEI?', '1.7': '¿Se establece qué tipo de investigaciones deben ser autorizadas previamente al inicio por la autoridad regulatoria?', '2.1': '¿La normativa define al patrocinador de un ensayo clínico?', '2.2': '¿Se requiere que el patrocinador tenga un representante legal o una entidad jurídica domiciliada en el país?', '2.3': '¿Se establecen los requisitos que debe cumplir el patrocinador para poder actuar como tal?', '2.4': '¿Se establecen los requisitos que debe cumplir el patrocinador si se actúa a través de una Organización de Investigación por Contrato (OIC / CRO)?', '2.5': '¿Existen requisitos específicos para la selección de sitios o investigadores?', '2.6': '¿Se establecen requisitos sobre seguros y compensación para los participantes?', '3.1': '¿Se establece cuál es el contenido esencial del envío para la autorización inicial?', '3.2': '¿Se establece cómo es el proceso de envío (plataforma, formato)?', '3.3': '¿Se definen cuáles son los plazos regulatorios oficiales para la cronología de la revisión?', '3.4': '¿Se deben pagar tasas (aranceles) por la evaluación del ensayo?', '3.5': '¿Es obligatorio el registro público del ensayo clínico antes de su inicio?', '3.6': '¿Existen mecanismos de reconocimiento de evaluaciones o acreditaciones realizadas por autoridades regulatorias o éticas fuera del país?', '3.7': '¿Cuál es el orden secuencial de pasos que deben cumplir el patrocinador, la institución y el investigador principal desde el principio del proceso hasta la autorización para el inicio del estudio?', '4.1': '¿Se establecen requisitos de etiquetado para el PI?', '4.2': '¿Se requiere prueba de Buenas Prácticas de Manufactura (BPM/GMP) para el PI?', '4.3': '¿La aprobación del ensayo incluye la autorización para importar/usar el PI?', '5.1': 'Informes de Seguridad: ¿Se establecen cuáles son los requisitos, canales, mecanismos y plazos para notificar EAS y RASI/SUSARs?', '5.2': '¿Se requiere la presentación de informes anuales de seguridad?', '5.3': '¿Se requiere la presentación de informes de seguimiento periódicos?', '5.4': '¿Se establece qué tipo de enmiendas al protocolo requieren aprobación previa de la ARN y/o del CEI?', '5.5': '¿Existen obligaciones sobre el acceso post-estudio al tratamiento en investigación?', '6.1': '¿Existe una ley de protección de datos personales aplicable a los ensayos clínicos?', '6.2': '¿Existen normativas o guías específicas para ensayos clínicos con vacunas?', '6.3': '¿Existen normativas o guías específicas para la recolección y/o utilización de muestras para investigación?', '6.4': 'Ensayos clínicos para situaciones especiales: ¿Existen normativas o guías específicas para otro tipo de ensayos clínicos?'
         };
 
-        const countryFlags = { 'Argentina': '🇦🇷', 'Bolivia': '🇧🇴', 'Brasil': '🇧🇷', 'Chile': '🇨🇱', 'Colombia': '🇨🇴', 'Costa Rica': '🇨🇷', 'Cuba': '🇨🇺', 'Ecuador': '🇪🇨', 'El Salvador': '🇸🇻', 'Guatemala': '🇬🇹', 'Haití': '🇭🇹', 'Honduras': '🇭🇳', 'Jamaica': '🇯🇲', 'México': '🇲🇽', 'Nicaragua': '🇳🇮', 'Panamá': '🇵🇦', 'Paraguay': '🇵🇾', 'Perú': '🇵🇪', 'República Dominicana': '🇩🇴', 'Trinidad y Tobago': '🇹🇹', 'Uruguay': '🇺🇾', 'Venezuela': '🇻🇪'};
+        const countryFlags = {
+            'Argentina': 'fi fi-ar', 'Bolivia': 'fi fi-bo', 'Brasil': 'fi fi-br', 'Chile': 'fi fi-cl', 'Colombia': 'fi fi-co', 'Costa Rica': 'fi fi-cr', 'Cuba': 'fi fi-cu', 'Ecuador': 'fi fi-ec', 'El Salvador': 'fi fi-sv', 'Guatemala': 'fi fi-gt', 'Haití': 'fi fi-ht', 'Honduras': 'fi fi-hn', 'Jamaica': 'fi fi-jm', 'México': 'fi fi-mx', 'Nicaragua': 'fi fi-ni', 'Panamá': 'fi fi-pa', 'Paraguay': 'fi fi-py', 'Perú': 'fi fi-pe', 'República Dominicana': 'fi fi-do', 'Trinidad y Tobago': 'fi fi-tt', 'Uruguay': 'fi fi-uy', 'Venezuela': 'fi fi-ve'
+        };
         
-        // --- CORRECCIÓN: Lista de exclusiones booleana ajustada a tu requerimiento ---
-        // Todas las preguntas tienen booleano excepto las listadas aquí.
         const noBooleanQuestions = ['1.1', '1.2', '1.3', '3.7'];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -220,9 +242,7 @@
                 const sourceToggle = event.target.closest('.source-toggle');
                 if (sourceToggle) {
                     const sourceElement = document.getElementById(sourceToggle.dataset.target);
-                    if (sourceElement) {
-                        sourceElement.style.display = sourceElement.style.display === 'block' ? 'none' : 'block';
-                    }
+                    if (sourceElement) { sourceElement.style.display = sourceElement.style.display === 'block' ? 'none' : 'block'; }
                     return;
                 }
                 const expandButton = event.target.closest('.expand-info-button');
@@ -233,6 +253,32 @@
                         targetElement.style.display = isVisible ? 'none' : 'block';
                         expandButton.textContent = isVisible ? 'Ampliar información' : 'Ocultar información';
                     }
+                    return;
+                }
+                
+                const viewCountryBtn = event.target.closest('.view-full-country-info-btn');
+                if (viewCountryBtn) {
+                    const countryName = viewCountryBtn.dataset.country;
+                    if (countryName) {
+                        fetchAndDisplayCountry(countryName);
+                    }
+                    return;
+                }
+            });
+
+            document.getElementById('sidebar-nav').addEventListener('click', function(event) {
+                const categoryTitle = event.target.closest('.sidebar-category-title');
+                if (categoryTitle) {
+                    const parentCategory = categoryTitle.closest('.sidebar-category');
+                    if (parentCategory) { parentCategory.classList.toggle('active'); }
+                }
+            });
+
+            document.getElementById('filter-checkbox-container').addEventListener('click', function(event) {
+                const categoryTitle = event.target.closest('.filter-category-title');
+                if (categoryTitle) {
+                    const parentCategory = categoryTitle.closest('.filter-category');
+                    if (parentCategory) { parentCategory.classList.toggle('active'); }
                 }
             });
         }
@@ -244,19 +290,25 @@
             document.getElementById(`${tabName}-tab`).classList.add('active');
         }
 
-        // --- TAB 1: SEARCH BY COUNTRY ---
-        async function searchByCountry() {
+        function searchByCountry() {
             const countryName = document.getElementById('country-select').value;
-            if (!countryName) return alert('Por favor, seleccione un país.');
+            if (countryName) {
+                fetchAndDisplayCountry(countryName);
+            } else {
+                alert('Por favor, seleccione un país.');
+            }
+        }
+
+        async function fetchAndDisplayCountry(countryName) {
+            if (!countryName) return;
             showLoading();
             try {
-                // Se realizan 3 consultas en paralelo para mayor eficiencia
+                // Se ordena por 'question_code' para asegurar que los enlaces vengan agrupados
                 const [faqRes, summaryRes, linksRes] = await Promise.all([
                     supabaseClient.from('faq').select('*').eq('pais', countryName).single(),
                     supabaseClient.from('resumen_ejecutivo').select('*').eq('pais', countryName).single(),
-                    supabaseClient.from('enlaces').select('*').eq('pais', countryName).order('titulo')
+                    supabaseClient.from('enlaces').select('*').eq('pais', countryName).order('question_code') 
                 ]);
-
                 if (faqRes.error) throw new Error(`Error en FAQ: ${faqRes.error.message}`);
                 if (summaryRes.error) throw new Error(`Error en Resumen: ${summaryRes.error.message}`);
                 if (linksRes.error) throw new Error(`Error en Enlaces: ${linksRes.error.message}`);
@@ -272,9 +324,9 @@
             const mainContent = document.getElementById('main-results-content');
             const sidebarNav = document.getElementById('sidebar-nav');
             
-            let mainHtml = `
+            let mainHtml = `<div class="results-content-inner">
                 <div class="country-header">
-                    <div class="country-flag">${countryFlags[faqData.pais]}</div>
+                    <div class="country-flag"><span class="${countryFlags[faqData.pais]}"></span></div>
                     <div>
                         <div class="country-name">${faqData.pais}</div>
                         <div>${summaryData.autoridad_regulatoria}</div>
@@ -293,17 +345,12 @@
 
             categories.forEach(category => {
                 const categoryQuestions = Object.keys(canonicalQuestions).filter(q => q.startsWith(category.id + '.'));
-                
-                // Si la categoría no tiene preguntas (como la 7 en el bucle principal), la omitimos
                 if (categoryQuestions.length === 0 && category.id !== 7) return;
 
                 mainHtml += `<h2 id="category-${category.id}" style="margin-top: 40px; color: var(--primary-blue); border-bottom: 2px solid var(--neutral-200); padding-bottom: 10px;">${category.name}</h2>`;
                 
-                // Construcción de la barra lateral
-                sidebarHtml += `<div class="sidebar-category"><div class="sidebar-category-title">${category.name}</div><ul class="sidebar-question-list">`;
-                
+                sidebarHtml += `<div class="sidebar-category"><div class="sidebar-category-title"><span>${category.name}</span><i class="fas fa-chevron-right indicator-icon"></i></div><ul class="sidebar-question-list">`;
                 if (category.id === 7) {
-                    // La categoría 7 (Recursos) se maneja de forma especial
                     sidebarHtml += `<li><a href="#category-7">Ver todos los recursos</a></li>`;
                 } else {
                     categoryQuestions.forEach(qCode => {
@@ -312,28 +359,32 @@
                 }
                 sidebarHtml += `</ul></div>`;
 
-                // Construcción del contenido principal
+                /* --- MODIFICADO: Lógica para renderizar enlaces por categoría --- */
                 if (category.id === 7) {
-                    // Renderizar los enlaces de la tabla 'enlaces'
                     if (linksData && linksData.length > 0) {
-                        linksData.forEach(link => {
-                            mainHtml += `
-                                <div class="resource-card">
-                                    <h4><i class="fas fa-link"></i> ${link.titulo || 'Enlace'}</h4>
-                                    <p>${link['proposito_descripcion'] || 'Sin descripción.'}</p>
-                                    <a href="${link.enlace}" target="_blank" rel="noopener noreferrer">Acceder al recurso <i class="fas fa-external-link-alt"></i></a>
-                                </div>`;
+                        const linkCategories = {
+                            '7.1': '7.1. Normativas Clave de Referencia Rápida',
+                            '7.2': '7.2. Formularios Oficiales',
+                            '7.3': '7.3. Guías, Instructivos Oficiales y Web'
+                        };
+
+                        Object.keys(linkCategories).forEach(code => {
+                            const linksForCategory = linksData.filter(link => link.question_code === code);
+                            if (linksForCategory.length > 0) {
+                                mainHtml += `<h3 class="resource-subtitle">${linkCategories[code]}</h3>`;
+                                linksForCategory.forEach(link => {
+                                    mainHtml += `<div class="resource-card"><h4><i class="fas fa-link"></i> ${link.titulo || 'Enlace'}</h4><p>${link['proposito_descripcion'] || 'Sin descripción.'}</p><a href="${link.enlace}" target="_blank" rel="noopener noreferrer">Acceder al recurso <i class="fas fa-external-link-alt"></i></a></div>`;
+                                });
+                            }
                         });
                     } else {
                         mainHtml += `<p>No hay recursos prácticos o enlaces disponibles para este país.</p>`;
                     }
                 } else {
-                    // Renderizar las preguntas de la tabla 'faq'
                     categoryQuestions.forEach(qCode => {
                         const dbKey = `q_${qCode.replace(/\./g, '_')}`;
                         const anchorId = `question-${qCode.replace(/\./g, '-')}`;
-                        mainHtml += `<div class="requirement" id="${anchorId}">
-                                        <div class="requirement-title">${qCode} - ${canonicalQuestions[qCode]}</div>`;
+                        mainHtml += `<div class="requirement" id="${anchorId}"><div class="requirement-title">${qCode} - ${canonicalQuestions[qCode]}</div>`;
                         if (faqData[`${dbKey}_directa`]) mainHtml += `<div class="requirement-direct-answer">${faqData[`${dbKey}_directa`]}</div>`;
                         if (faqData[`${dbKey}_ampliada`]) mainHtml += `<div class="requirement-detail">${faqData[`${dbKey}_ampliada`]}</div>`;
                         if (faqData[`${dbKey}_fuente`]) mainHtml += `<button class="source-toggle" data-target="source-${anchorId}"><i class="fas fa-book"></i> Ver Fuente</button><div class="requirement-source" id="source-${anchorId}">${faqData[`${dbKey}_fuente`]}</div>`;
@@ -341,6 +392,7 @@
                     });
                 }
             });
+            mainHtml += `</div>`;
 
             mainContent.innerHTML = mainHtml;
             sidebarNav.innerHTML = sidebarHtml;
@@ -348,7 +400,6 @@
             document.getElementById('results-section').classList.add('show');
         }
 
-        // --- TAB 2: COMPARE BY REQUIREMENT ---
         async function searchByRequirement() {
             const requirementCode = document.getElementById('requirement-select').value;
             if (!requirementCode) return alert('Por favor, seleccione un requisito.');
@@ -358,10 +409,8 @@
                 const hasBoolean = !noBooleanQuestions.includes(requirementCode);
                 let fields = `pais, ${dbKey}_directa, ${dbKey}_ampliada`;
                 if (hasBoolean) fields += `, ${dbKey}_booleano`;
-                
                 const { data, error } = await supabaseClient.from('faq').select(fields).order('pais');
                 if (error) throw error;
-                
                 displayRequirementComparison(requirementCode, data, hasBoolean);
             } catch (error) {
                 showError(`No se pudieron cargar los datos de comparación.`);
@@ -371,7 +420,7 @@
         function displayRequirementComparison(reqCode, countries, hasBoolean) {
             const mainContent = document.getElementById('main-results-content');
             const dbKey = `q_${reqCode.replace(/\./g, '_')}`;
-            let html = `<div style="margin-bottom: 32px;"><h2 style="color: var(--primary-blue);">${canonicalQuestions[reqCode]}</h2><p>Comparativa entre todos los países disponibles.</p></div><div>`;
+            let html = `<div class="results-content-inner"><div style="margin-bottom: 32px;"><h2 style="color: var(--primary-blue);">${canonicalQuestions[reqCode]}</h2><p>Comparativa entre todos los países disponibles.</p></div><div>`;
             countries.forEach((country, index) => {
                 const directa = country[`${dbKey}_directa`] || 'Información no disponible.';
                 const ampliada = country[`${dbKey}_ampliada`];
@@ -382,27 +431,18 @@
                     if (booleanValue === true) statusBadge = '<span class="status-badge yes">✓ SÍ</span>';
                     else if (booleanValue === false) statusBadge = '<span class="status-badge no">✗ NO</span>';
                 }
-                html += `<div class="comparison-card">
-                            <div class="comparison-card-header">
-                                <h3>${countryFlags[country.pais]} ${country.pais}</h3>
-                                ${statusBadge}
-                            </div>
-                            <div class="comparison-card-directa">${directa}</div>`;
+                html += `<div class="comparison-card"><div class="comparison-card-header"><h3><span class="fi ${countryFlags[country.pais]}"></span> ${country.pais}</h3>${statusBadge}</div><div class="comparison-card-directa">${directa}</div>`;
                 if (ampliada) {
-                    html += `<div class="comparison-card-ampliada" id="${detailId}">${ampliada}</div>
-                             <div class="comparison-card-footer">
-                                 <button class="expand-info-button" data-target="${detailId}">Ampliar información</button>
-                             </div>`;
+                    html += `<div class="comparison-card-ampliada" id="${detailId}">${ampliada}</div><div class="comparison-card-footer"><button class="expand-info-button" data-target="${detailId}">Ampliar información</button></div>`;
                 }
                 html += `</div>`;
             });
-            html += `</div>`;
+            html += `</div></div>`;
             mainContent.innerHTML = html;
             document.getElementById('sidebar-nav').style.display = 'none';
             document.getElementById('results-section').classList.add('show');
         }
-
-        // --- TAB 3: ADVANCED FILTER ---
+        
         async function searchByFilter() {
             const checkedInputs = document.querySelectorAll('#filter-checkbox-container input:checked');
             if (checkedInputs.length === 0) return alert('Por favor, seleccione al menos un criterio para filtrar.');
@@ -423,30 +463,36 @@
         
         function displayFilteredCountries(countries, criteria) {
             const mainContent = document.getElementById('main-results-content');
-            let html = `<h2 style="color: var(--primary-blue); margin-bottom: 2rem;">Resultados del Filtro Avanzado</h2>
+            let html = `<div class="results-content-inner">
+                        <h2 style="color: var(--primary-blue); margin-bottom: 2rem;">Resultados del Filtro Avanzado</h2>
                         <div style="background: var(--neutral-50); padding: 20px; border-radius: 12px; margin-bottom: 24px;">
                         <h4 style="margin-bottom: 12px;">Países que cumplen con TODOS los siguientes criterios:</h4>
                         <ul style="list-style-type: none; padding-left: 0;">`;
             criteria.forEach(c => { html += `<li><i class="fas fa-check-circle" style="color: var(--primary-green); margin-right: 8px;"></i>${c.text}</li>`; });
             html += `</ul></div>`;
             if (countries.length > 0) {
-                html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">`;
+                html += `<div id="filtered-countries-grid">`;
                 countries.forEach(country => {
-                    html += `<div style="text-align: center; padding: 24px; border: 1px solid var(--neutral-200); border-radius: 12px;">
-                                <span style="font-size: 3rem;">${countryFlags[country.pais]}</span>
-                                <h4 style="margin-top: 12px; color: var(--primary-blue);">${country.pais}</h4>
+                    html += `<div class="filtered-country-card">
+                                <div>
+                                    <div class="fi-container"><span class="${countryFlags[country.pais]}"></span></div>
+                                    <h4 class="country-title">${country.pais}</h4>
+                                </div>
+                                <button class="view-full-country-info-btn" data-country="${country.pais}">
+                                    <i class="fas fa-file-alt"></i> Ver Ficha Completa
+                                </button>
                              </div>`;
                 });
                 html += `</div>`;
             } else {
                 html += `<div class="error" style="background: rgba(251, 191, 36, 0.1); color: #d97706; border-left-color: #f59e0b;">No se encontraron países que cumplan con todos los criterios seleccionados.</div>`;
             }
+            html += `</div>`;
             mainContent.innerHTML = html;
             document.getElementById('sidebar-nav').style.display = 'none';
             document.getElementById('results-section').classList.add('show');
         }
 
-        // --- POPULATION & UTILITIES ---
         function populateRequirementDropdown() {
             const select = document.getElementById('requirement-select');
             categories.forEach(category => {
@@ -467,17 +513,26 @@
             const container = document.getElementById('filter-checkbox-container');
             let html = '';
             categories.forEach(category => {
+                if (category.id === 7) return;
                 const booleanQuestions = Object.keys(canonicalQuestions).filter(q => q.startsWith(category.id + '.') && !noBooleanQuestions.includes(q));
                 if (booleanQuestions.length > 0) {
-                    html += `<div class="filter-category-title">${category.name}</div>`;
+                    html += `<div class="filter-category"><div class="filter-category-title"><span>${category.name}</span><i class="fas fa-chevron-right indicator-icon"></i></div><div class="filter-items-list">`;
                     booleanQuestions.forEach(qCode => {
                         html += `<span class="filter-item"><label><input type="checkbox" value="${qCode}">${qCode} - ${canonicalQuestions[qCode]}</label></span>`;
                     });
+                    html += `</div></div>`;
                 }
             });
             container.innerHTML = html;
         }
         
+        function clearFilters() {
+            const checkboxes = document.querySelectorAll('#filter-checkbox-container input[type="checkbox"]');
+            checkboxes.forEach(checkbox => { checkbox.checked = false; });
+            document.getElementById('results-section').classList.remove('show');
+            document.getElementById('main-results-content').innerHTML = '';
+        }
+
         function showLoading() {
             const mainContent = document.getElementById('main-results-content');
             const sidebarNav = document.getElementById('sidebar-nav');
@@ -490,6 +545,20 @@
             document.getElementById('main-results-content').innerHTML = `<div class="error"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
             document.getElementById('sidebar-nav').style.display = 'none';
             document.getElementById('results-section').classList.add('show');
+        }
+
+        const backToTopButton = document.getElementById("back-to-top-btn");
+        window.onscroll = function() { scrollFunction(); };
+        function scrollFunction() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) { backToTopButton.style.display = "block"; } else { backToTopButton.style.display = "none"; }
+        }
+        
+        /* --- MODIFICADO: Nueva función para el botón de scroll --- */
+        function scrollToSearch() { 
+            const searchSection = document.querySelector('.search-section');
+            if (searchSection) {
+                searchSection.scrollIntoView({ behavior: 'smooth' });
+            }
         }
     </script>
 </body>
