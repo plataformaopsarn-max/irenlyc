@@ -147,8 +147,94 @@
         .footer-content { max-width: 1200px; margin: 0 auto; text-align: center; }
         #back-to-top-btn { display: none; position: fixed; bottom: 30px; right: 30px; z-index: 99; border: none; outline: none; background-color: var(--primary-blue); color: white; cursor: pointer; padding: 0; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; box-shadow: var(--shadow-lg); transition: background-color 0.3s, opacity 0.3s, transform 0.3s; }
         #back-to-top-btn:hover { background-color: var(--primary-teal); transform: translateY(-3px); }
+        
         @media (max-width: 992px) { .results-section { flex-direction: column; } .sidebar-nav { width: 100%; position: static; } }
         @media (max-width: 768px) { .search-tabs { grid-template-columns: 1fr; } .button-group { flex-direction: column; } }
+        
+        /* --- INICIO: Estilos Responsivos Adicionales para Celular --- */
+        @media (max-width: 640px) {
+            body {
+                line-height: 1.5;
+            }
+            .hero-section {
+                padding: 24px 16px 16px;
+            }
+            .logo-image {
+                width: 100%;
+                max-width: 350px; /* Reducir el tamaño máximo del logo en móviles */
+            }
+            .main-subtitle {
+                font-size: 1rem;
+            }
+            .container {
+                padding: 16px;
+            }
+            .search-section {
+                padding: 24px; /* Reducir padding en la sección de búsqueda */
+            }
+            .tab-button {
+                padding: 16px 12px; /* Reducir padding de los botones de tabs */
+                font-size: 0.9rem;
+            }
+            .search-tabs {
+                gap: 12px;
+                margin-bottom: 32px;
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            label {
+                font-size: 1rem;
+            }
+            select, .search-button, .clear-button {
+                padding: 16px; /* Ajustar padding de controles */
+                font-size: 1rem;
+            }
+            .results-content-inner {
+                padding: 24px 16px; /* Reducir padding en el contenido de resultados */
+            }
+            .country-header {
+                flex-direction: column; /* Apilar bandera y nombre */
+                align-items: flex-start;
+                gap: 12px;
+                text-align: left;
+                margin-bottom: 24px;
+            }
+            .country-name {
+                font-size: 1.75rem; /* Reducir tamaño de fuente del nombre del país */
+            }
+            .executive-summary {
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+            .summary-item {
+                flex-direction: column; /* Apilar label y valor en el resumen */
+                align-items: flex-start;
+                gap: 4px;
+            }
+            .summary-item strong {
+                min-width: unset;
+            }
+            .comparison-card-header h3 {
+                font-size: 1.25rem;
+            }
+            #back-to-top-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+                right: 20px;
+                bottom: 20px;
+            }
+            .main-footer {
+                margin-top: 40px;
+                padding: 24px 16px;
+            }
+            .footer-content {
+                font-size: 0.8rem;
+            }
+        }
+        /* --- FIN: Estilos Responsivos Adicionales para Celular --- */
+
     </style>
 </head>
 <body>
