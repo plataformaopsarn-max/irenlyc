@@ -819,9 +819,42 @@
         }
 
         /* --- NUEVA FUNCIÓN: Generar informe imprimible/PDF --- */
-        function printReport() {
-            window.print();
+        /* --- MODIFICADO: Función para registrar la descarga y luego imprimir --- */
+async function printReport() {
+    const countryName = document.querySelector('.country-name').textContent;
+    const originalTitle = document.title;
+    
+    // 1. REGISTRAR LA DESCARGA EN SUPABASE (Asíncrono)
+    try {
+        const { error } = await supabaseClient
+            .from('descargas_informes') // ASEGÚRATE QUE ESTE ES EL NOMBRE DE TU NUEVA TABLA
+            .insert({ 
+                pais: countryName
+                // timestamp se genera automáticamente por el default: now() de la tabla
+            });
+
+        if (error) {
+            console.error('Error al registrar la descarga en Supabase:', error.message);
+            // NOTA: No interrumpimos la impresión aunque falle el registro.
+        } else {
+            console.log(`Descarga de ${countryName} registrada con éxito.`);
         }
+    } catch (e) {
+        console.error('Excepción al intentar registrar la descarga:', e);
+    }
+    
+    // 2. CAMBIAR EL TÍTULO PARA EL NOMBRE DEL ARCHIVO (Mecanismo de impresión)
+    document.title = `IRENLyC - Informe Regulatorio ${countryName}`;
+
+    // 3. Imprimir
+    window.print();
+
+    // 4. Restaurar el título original
+    // Se usa un pequeño retraso para permitir que el diálogo de impresión se abra
+    setTimeout(() => {
+        document.title = originalTitle;
+    }, 500);
+}
     </script>
 </body>
 </html>
