@@ -243,7 +243,145 @@
             }
         }
         /* --- FIN: Estilos Responsivos Adicionales para Celular --- */
+/* --- INICIO: Estilos de Impresión (PDF) para el Reporte --- */
+/* --- INICIO: Estilos de Impresión (PDF) para el Reporte --- */
+@media print {
+    /* Ocultar elementos de UI */
+    body {
+        background: white !important;
+        color: black;
+        font-size: 10pt; /* Reducir ligeramente el tamaño base de la fuente */
+    }
+    .hero-section, .search-section, .sidebar-nav, .main-footer, #back-to-top-btn, .print-button-container,
+    .source-toggle, .expand-info-button, .comparison-card-footer, .main-title, .main-subtitle,
+    .sidebar-category-title .indicator-icon {
+        display: none !important;
+    }
+    
+    /* Mostrar Encabezado de Impresión */
+    #print-header {
+        display: block !important; /* Muestra el encabezado SOLO al imprimir */
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #ccc;
+    }
+    #print-header img {
+        max-width: 200px; /* Logo más pequeño en la impresión */
+        height: auto;
+        margin-bottom: 5px;
+        filter: none;
+    }
+    #print-header h1 {
+        font-size: 1.2rem;
+        color: var(--primary-blue);
+        margin: 0;
+    }
 
+    /* Contenedor de Resultados */
+    .container {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    .results-section, .main-results-content, .results-content-inner {
+        display: block !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Títulos y Secciones */
+    h2, h3, h4 {
+        margin-top: 15px !important;
+        margin-bottom: 5px !important;
+        page-break-after: avoid;
+    }
+    
+    .country-header {
+        border-bottom: 3px solid var(--primary-teal);
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+    .country-flag { font-size: 2rem !important; }
+    .country-name { font-size: 1.5rem !important; }
+
+    /* Resumen Ejecutivo (para reducir espacios) */
+    .executive-summary {
+        padding: 10px !important;
+        margin-bottom: 15px !important;
+        border-left: 4px solid var(--primary-blue);
+        page-break-inside: avoid;
+    }
+    .summary-item {
+        margin-bottom: 4px !important;
+        font-size: 9pt;
+    }
+
+    /* Preguntas y Respuestas (para reducir espacios) */
+    .requirement {
+        padding: 10px 0 !important; /* Reducido de 28px */
+        border-bottom: 1px dashed #ccc;
+        page-break-inside: avoid;
+    }
+    .requirement-title {
+        font-weight: 700 !important;
+        color: var(--neutral-800);
+        margin-bottom: 5px !important; /* Reducido de 16px */
+    }
+    .requirement-direct-answer {
+        padding: 10px !important; /* Reducido de 20px */
+        margin: 5px 0 !important; /* Reducido de 16px */
+        border-left: 4px solid var(--primary-teal);
+    }
+    .requirement-detail, .requirement-source {
+        display: block !important; /* Mostrar siempre en impresión */
+        margin-top: 5px !important;
+        font-size: 9pt;
+    }
+    
+    /* Recursos Prácticos */
+    .resource-subtitle {
+        margin-top: 15px !important;
+        margin-bottom: 10px !important;
+        font-size: 1.1rem;
+    }
+    .resource-card {
+        padding: 10px !important;
+        margin-bottom: 8px !important;
+        font-size: 9pt;
+        page-break-inside: avoid;
+    }
+
+    /* Configuración de paginación para el navegador */
+    @page {
+        margin: 1.5cm 1cm; /* Márgenes de página más formales */
+    }
+}
+/* --- FIN: Estilos de Impresión (PDF) para el Reporte --- */
+/* --- Nuevo: Ocultar el encabezado de impresión en la vista normal --- */
+        #print-header {
+            display: none;
+        }
+        /* --- Fin Nuevo --- */
+/* --- FIN: Estilos de Impresión (PDF) para el Reporte --- */
+/* --- NUEVO: Estilos para el botón de impresión del informe --- */
+        .print-button-container {
+            display: flex; /* Usar Flexbox para el alineamiento */
+            justify-content: flex-end; /* Mover el contenido (el botón) a la derecha */
+            margin-bottom: 20px;
+            padding-right: 16px; /* Para que no se pegue al borde derecho del contenedor de resultados */
+        }
+        
+        .report-print-btn {
+            padding: 12px 20px !important; /* Reducir el padding para hacerlo más pequeño */
+            font-size: 1rem !important;    /* Reducir el tamaño de la fuente */
+            width: auto !important;        /* Asegurar que el ancho se ajuste al contenido */
+            background: var(--accent-red) !important; /* Mantener el color rojo */
+            box-shadow: none !important; /* Quitar la sombra fuerte de los botones de búsqueda */
+        }
+        /* --- FIN: Estilos para el botón de impresión del informe --- */
     </style>
 </head>
 <body>
@@ -430,6 +568,21 @@
             const sidebarNav = document.getElementById('sidebar-nav');
             
             let mainHtml = `<div class="results-content-inner">
+                
+                <!-- Encabezado exclusivo para la impresión -->
+                <div id="print-header">
+                    <img src="Logo2.png" alt="IRENLyC Logo">
+                    <h1>Información Regulatoria para Ensayos Clínicos de Latinoamérica y Caribe</h1>
+                </div>
+
+                <!-- Botón de Imprimir/Generar PDF -->
+                <div class="print-button-container"> 
+                    <button onclick="printReport()" class="search-button report-print-btn">
+                        <i class="fas fa-print"></i> <span>Imprimir/Generar PDF del Informe</span>
+                    </button>
+                </div>
+                
+                <!-- Encabezado del País -->
                 <div class="country-header">
                     <div class="country-flag"><span class="${countryFlags[faqData.pais]}"></span></div>
                     <div>
@@ -438,8 +591,7 @@
                     </div>
                 </div>
                 <div class="executive-summary">
-                    <h2><i class="fas fa-info-circle"></i> Resumen Ejecutivo</h2>
-                    <div class="summary-item"><strong>Autoridad:</strong> <span>${summaryData.autoridad_regulatoria || 'No disponible'}</span></div>
+                    <h2><i class="fas fa-info-circle"></i> Resumen Ejecutivo</h2>                    <div class="summary-item"><strong>Autoridad:</strong> <span>${summaryData.autoridad_regulatoria || 'No disponible'}</span></div>
                     <div class="summary-item"><strong>Sitio Web:</strong> <a href="${summaryData.sitio_web_oficial}" target="_blank" rel="noopener noreferrer">${summaryData.sitio_web_oficial || 'No disponible'}</a></div>
                     <div class="summary-item"><strong>Email:</strong> <span>${summaryData.correo_contacto || 'No disponible'}</span></div>
                     <div class="summary-item"><strong>Teléfonos:</strong> <span>${summaryData.telefonos || 'No disponible'}</span></div>
@@ -664,6 +816,11 @@
             if (searchSection) {
                 searchSection.scrollIntoView({ behavior: 'smooth' });
             }
+        }
+
+        /* --- NUEVA FUNCIÓN: Generar informe imprimible/PDF --- */
+        function printReport() {
+            window.print();
         }
     </script>
 </body>
