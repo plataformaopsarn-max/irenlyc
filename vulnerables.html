@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L4BZ8GDMZ5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-L4BZ8GDMZ5');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRENLyC - Poblaciones Vulnerables</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7/css/flag-icons.min.css"/>
+
+    <style>
+        :root {
+            /* Mismos colores que la original, quizás podrías variar el primary-blue si quieres distinguir las páginas, 
+               pero aquí mantengo la identidad visual exacta */
+            --primary-blue: #1e3a8a;
+            --primary-teal: #14b8a6;
+            --primary-green: #10b981;
+            --accent-red: #e11d48;
+            --neutral-50: #f8fafc;
+            --neutral-100: #f1f5f9;
+            --neutral-200: #e2e8f0;
+            --neutral-300: #cbd5e1;
+            --neutral-600: #475569;
+            --neutral-700: #334155;
+            --neutral-800: #1e293b;
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e40af 0%, #0d9488 50%, #10b981 100%);
+            color: var(--neutral-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+       .hero-section { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px 20px; text-align: center; background: white; box-shadow: var(--shadow-md); }
+        .logo-image { width: 600px; height: auto; max-height: 500px; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15)); }
+        .main-title { font-size: clamp(3rem, 7vw, 5rem); font-weight: 800; color: var(--primary-blue); letter-spacing: 2px; margin-bottom: 16px; display: none; }
+        .main-subtitle { font-size: clamp(1rem, 2.5vw, 1.5rem); color: var(--neutral-700); font-weight: 500; max-width: 800px; }
+        .module-tag { 
+            background: var(--primary-teal); color: white; padding: 4px 12px; 
+            border-radius: 20px; font-size: 0.9rem; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .search-section { background: white; border-radius: 20px; padding: 48px; box-shadow: var(--shadow-xl); margin: 0 auto 48px; max-width: 900px; }
+        .search-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 48px; }
+        .tab-button { background: var(--neutral-100); border: 2px solid transparent; padding: 24px 20px; font-size: 1rem; cursor: pointer; color: var(--neutral-600); border-radius: 16px; transition: all 0.3s ease; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+        .tab-button:hover { background: var(--neutral-200); transform: translateY(-2px); }
+        .tab-button.active { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%); color: white; box-shadow: var(--shadow-lg); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 28px; }
+        label { display: block; margin-bottom: 12px; font-weight: 600; color: var(--neutral-700); font-size: 1.1rem; }
+        select { width: 100%; padding: 18px 24px; border: 2px solid var(--neutral-200); border-radius: 12px; font-size: 1.05rem; background: white; }
+        select:focus { outline: none; border-color: var(--primary-teal); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1); }
+        .search-button, .clear-button {
+            border: none; padding: 20px 30px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-lg); width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+        .search-button { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%); color: white; }
+        .search-button:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.4); }
+        .results-section { display: none; gap: 24px; align-items: flex-start; }
+        .results-section.show { display: flex; }
+        .sidebar-nav { flex-shrink: 0; width: 320px; background: white; border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); position: sticky; top: 24px; }
+        .sidebar-nav h3 { font-size: 1.2rem; color: var(--primary-blue); margin-bottom: 20px; border-bottom: 2px solid var(--neutral-200); padding-bottom: 10px; }
+        .sidebar-category { margin-bottom: 8px; }
+        .sidebar-category-title { font-weight: 600; color: var(--primary-blue); cursor: pointer; padding: 8px; border-radius: 8px; transition: background-color 0.2s ease; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-category-title:hover { background-color: var(--neutral-100); }
+        .sidebar-category-title .indicator-icon { transition: transform 0.3s ease; font-size: 0.8em; }
+        .sidebar-category.active .sidebar-category-title .indicator-icon { transform: rotate(90deg); }
+        .sidebar-question-list { list-style: none; padding-left: 16px; margin-top: 8px; display: none; }
+        .sidebar-category.active .sidebar-question-list { display: block; }
+        .sidebar-question-list a { display: block; padding: 8px; text-decoration: none; color: var(--neutral-700); border-radius: 8px; transition: all 0.2s ease; font-size: 0.9rem; }
+        .sidebar-question-list a:hover { background-color: var(--primary-teal); color: white; transform: translateX(4px); }
+        .main-results-content { flex-grow: 1; }
+        .results-content-inner { background: white; border-radius: 16px; padding: 48px; box-shadow: var(--shadow-lg); }
+        .country-header { display: flex; align-items: center; gap: 24px; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 2px solid var(--neutral-200); }
+        .country-flag { font-size: 3rem; line-height: 1; }
+        .country-name { font-size: 2.25rem; color: var(--primary-blue); font-weight: 700; }
+        .executive-summary { background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%); padding: 32px; border-radius: 16px; margin-bottom: 48px; border-left: 4px solid var(--primary-teal); }
+        .summary-item { margin-bottom: 16px; display: flex; align-items: flex-start; }
+        .summary-item strong { min-width: 120px; display: inline-block; color: var(--neutral-800); }
+        .summary-item a { color: var(--primary-blue); text-decoration: none; }
+        .summary-item a:hover { text-decoration: underline; }
+        .requirement { padding: 28px 0; border-bottom: 1px solid var(--neutral-100); }
+        .requirement-title { font-weight: 600; color: var(--neutral-800); margin-bottom: 16px; }
+        .requirement-direct-answer { background: linear-gradient(135deg, rgba(30, 58, 138, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%); padding: 20px; border-radius: 12px; margin: 16px 0; border-left: 4px solid var(--primary-teal); color: var(--neutral-700); }
+        .requirement-detail { color: var(--neutral-600); white-space: pre-wrap; margin-top: 16px; }
+        .source-toggle { background: none; border: 1px solid var(--neutral-300); color: var(--neutral-600); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; }
+        .source-toggle:hover { background: var(--neutral-100); border-color: var(--primary-teal); color: var(--primary-teal); }
+        .requirement-source { display: none; margin-top: 16px; padding: 16px; background: var(--neutral-50); border-radius: 12px; border-left: 4px solid var(--primary-teal); white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; }
+        .resource-card { background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .resource-card h4 { color: var(--primary-blue); margin-bottom: 8px; }
+        .resource-card p { margin-bottom: 12px; font-size: 0.95rem; }
+        .resource-card a { color: var(--primary-teal); font-weight: 600; text-decoration: none; }
+        .resource-card a:hover { text-decoration: underline; }
+        .resource-subtitle {
+            font-size: 1.2rem; font-weight: 700; color: var(--primary-blue);
+            margin-top: 32px; margin-bottom: 16px; padding-bottom: 8px;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+        .loading { text-align: center; padding: 80px; }
+        .error { background: rgba(239, 68, 68, 0.1); color: #dc2626; padding: 24px; border-radius: 12px; border-left: 4px solid #dc2626; }
+        #filter-checkbox-container { max-height: 400px; overflow-y: auto; background: var(--neutral-50); padding: 20px; border-radius: 12px; border: 1px solid var(--neutral-200); }
+        .filter-category { border-bottom: 1px solid var(--neutral-200); padding: 8px 0; }
+        .filter-category:last-child { border-bottom: none; }
+        .filter-category-title { font-weight: 700; color: var(--primary-blue); cursor: pointer; padding: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .filter-category-title .indicator-icon { transition: transform 0.3s ease; font-size: 0.8em; }
+        .filter-category.active .filter-category-title .indicator-icon { transform: rotate(90deg); }
+        .filter-items-list { display: none; padding: 8px 0 8px 16px; }
+        .filter-category.active .filter-items-list { display: block; }
+        .filter-item { display: block; margin: 8px 0; }
+        .filter-item label { font-size: 0.95rem; display: flex; align-items: center; cursor: pointer; font-weight: 400; }
+        .filter-item input { width: auto; margin-right: 12px; }
+        .button-group { display: flex; gap: 16px; margin-top: 24px; }
+        .clear-button { background: var(--neutral-100); color: var(--neutral-700); border: 2px solid var(--neutral-200); box-shadow: none; }
+        .clear-button:hover { background: var(--neutral-200); transform: translateY(-2px); }
+        .comparison-card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow-md); }
+        .comparison-card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--neutral-200); }
+        .comparison-card-header h3 { color: var(--primary-blue); font-size: 1.5rem; margin: 0; display: flex; align-items: center; gap: 12px;}
+        .comparison-card-directa { color: var(--neutral-700); margin-bottom: 16px; }
+        .comparison-card-ampliada { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--neutral-200); color: var(--neutral-600); white-space: pre-wrap; }
+        .comparison-card-footer { text-align: right; }
+        .expand-info-button { background: none; border: none; color: var(--accent-red); font-weight: 600; cursor: pointer; padding: 8px 0; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 600; color: white; }
+        .status-badge.yes { background-color: var(--primary-green); }
+        .status-badge.no { background-color: var(--neutral-600); }
+        #filtered-countries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
+        .filtered-country-card {
+            background: white; border-radius: 16px; padding: 24px; text-align: center;
+            box-shadow: var(--shadow-md); transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .filtered-country-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .filtered-country-card .fi-container { font-size: 3.5rem; margin-bottom: 16px; }
+        .filtered-country-card .country-title { color: var(--primary-blue); margin-bottom: 24px; }
+        .view-full-country-info-btn {
+            background: var(--primary-teal); color: white; border: none; padding: 12px 16px;
+            border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            transition: background-color 0.3s ease; display: flex; align-items: center;
+            justify-content: center; gap: 8px; width: 100%;
+        }
+        .view-full-country-info-btn:hover { background: var(--primary-blue); }
+        .main-footer { background: rgba(0, 0, 0, 0.3); color: white; padding: 32px 24px; margin-top: 80px; backdrop-filter: blur(10px); }
+        .footer-content { max-width: 1200px; margin: 0 auto; text-align: center; }
+        #back-to-top-btn { display: none; position: fixed; bottom: 30px; right: 30px; z-index: 99; border: none; outline: none; background-color: var(--primary-blue); color: white; cursor: pointer; padding: 0; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; box-shadow: var(--shadow-lg); transition: background-color 0.3s, opacity 0.3s, transform 0.3s; }
+        #back-to-top-btn:hover { background-color: var(--primary-teal); transform: translateY(-3px); }
+        .print-button-container { display: flex; justify-content: flex-end; margin-bottom: 20px; padding-right: 16px; }
+        .report-print-btn { padding: 12px 20px !important; font-size: 1rem !important; width: auto !important; background: var(--accent-red) !important; box-shadow: none !important; }
+        #print-header { display: none; }
+
+        @media (max-width: 992px) { 
+            .results-section { flex-direction: column; } 
+            .sidebar-nav { display: none !important; width: 100%; position: static; } 
+        }
+        @media (max-width: 768px) { .search-tabs { grid-template-columns: 1fr; } .button-group { flex-direction: column; } }
+        @media (max-width: 640px) {
+            body { line-height: 1.5; }
+            .hero-section { padding: 24px 16px 16px; }
+            .logo-image { width: 100%; max-width: 350px; }
+            .main-subtitle { font-size: 1rem; }
+            .container { padding: 16px; }
+            .search-section { padding: 24px; }
+            .tab-button { padding: 16px 12px; font-size: 0.9rem; }
+            .search-tabs { gap: 12px; margin-bottom: 32px; }
+            .form-group { margin-bottom: 20px; }
+            label { font-size: 1rem; }
+            select, .search-button, .clear-button { padding: 16px; font-size: 1rem; }
+            .results-content-inner { padding: 24px 16px; }
+            .country-header { flex-direction: column; align-items: flex-start; gap: 12px; text-align: left; margin-bottom: 24px; }
+            .country-name { font-size: 1.75rem; }
+            .executive-summary { padding: 24px; margin-bottom: 24px; }
+            .summary-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .summary-item strong { min-width: unset; }
+            .comparison-card-header h3 { font-size: 1.25rem; }
+            #back-to-top-btn { width: 45px; height: 45px; font-size: 18px; right: 20px; bottom: 20px; }
+            .main-footer { margin-top: 40px; padding: 24px 16px; }
+            .footer-content { font-size: 0.8rem; }
+        }
+
+        @media print {
+            body { background: white !important; color: black; font-size: 10pt; }
+            .hero-section, .search-section, .sidebar-nav, .main-footer, #back-to-top-btn, .print-button-container,
+            .source-toggle, .expand-info-button, .comparison-card-footer, .main-title, .main-subtitle,
+            .sidebar-category-title .indicator-icon { display: none !important; }
+            
+            #print-header { display: block !important; text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #ccc; }
+            #print-header img { max-width: 200px; height: auto; margin-bottom: 5px; filter: none; }
+            #print-header h1 { font-size: 1.2rem; color: var(--primary-blue); margin: 0; }
+
+            .container { max-width: 100%; padding: 0; margin: 0; }
+            .results-section, .main-results-content, .results-content-inner { display: block !important; width: 100% !important; box-shadow: none !important; padding: 0; margin: 0; }
+
+            h2, h3, h4 { margin-top: 15px !important; margin-bottom: 5px !important; page-break-after: avoid; }
+            .country-header { border-bottom: 3px solid var(--primary-teal); padding-bottom: 10px; margin-bottom: 15px; }
+            .country-flag { font-size: 2rem !important; }
+            .country-name { font-size: 1.5rem !important; }
+
+            .executive-summary { padding: 10px !important; margin-bottom: 15px !important; border-left: 4px solid var(--primary-blue); page-break-inside: avoid; }
+            .summary-item { margin-bottom: 4px !important; font-size: 9pt; }
+
+            .requirement { padding: 10px 0 !important; border-bottom: 1px dashed #ccc; page-break-inside: avoid; }
+            .requirement-title { font-weight: 700 !important; color: var(--neutral-800); margin-bottom: 5px !important; }
+            .requirement-direct-answer { padding: 10px !important; margin: 5px 0 !important; border-left: 4px solid var(--primary-teal); }
+            .requirement-detail, .requirement-source { display: block !important; margin-top: 5px !important; font-size: 9pt; }
+            
+            .resource-subtitle { margin-top: 15px !important; margin-bottom: 10px !important; font-size: 1.1rem; }
+            .resource-card { padding: 10px !important; margin-bottom: 8px !important; font-size: 9pt; page-break-inside: avoid; }
+
+            @page { margin: 1.5cm 1cm; }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero-section">
+        <img src="Nueva estructura/Logo2.png" alt="IRENLyC Logo" class="logo-image">
+        <div>
+            <h1 class="main-title">IRENLyC</h1>
+            <p class="main-subtitle">Información Regulatoria para Ensayos Clínicos de Latinoamérica y Caribe</p>
+            <div class="module-tag">Módulo: Poblaciones Vulnerables</div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="search-section">
+            <div class="search-tabs">
+                <button class="tab-button active" onclick="switchTab(event, 'country')"><i class="fas fa-map-marker-alt"></i><span>Búsqueda por País</span></button>
+                <button class="tab-button" onclick="switchTab(event, 'requirement')"><i class="fas fa-clipboard-list"></i><span>Comparar por Requisito</span></button>
+                <button class="tab-button" onclick="switchTab(event, 'filter')"><i class="fas fa-filter"></i><span>Filtro Avanzado</span></button>
+            </div>
+
+            <div id="country-tab" class="tab-content active">
+                <div class="form-group">
+                    <label for="country-select"><i class="fas fa-globe-americas"></i> Seleccione un País:</label>
+                    <select id="country-select">
+                        <option value="">-- Seleccione un país --</option>
+                        <option value="Argentina">Argentina</option><option value="Bolivia">Bolivia</option><option value="Brasil">Brasil</option><option value="Chile">Chile</option><option value="Colombia">Colombia</option><option value="Costa Rica">Costa Rica</option><option value="Cuba">Cuba</option><option value="Ecuador">Ecuador</option><option value="El Salvador">El Salvador</option><option value="Guatemala">Guatemala</option><option value="Haití">Haití</option><option value="Honduras">Honduras</option><option value="Jamaica">Jamaica</option><option value="México">México</option><option value="Nicaragua">Nicaragua</option><option value="Panamá">Panamá</option><option value="Paraguay">Paraguay</option><option value="Perú">Perú</option><option value="República Dominicana">República Dominicana</option><option value="Trinidad y Tobago">Trinidad y Tobago</option><option value="Uruguay">Uruguay</option><option value="Venezuela">Venezuela</option>
+                    </select>
+                </div>
+                <button class="search-button" onclick="searchByCountry()"><i class="fas fa-search"></i><span>Consultar Requisitos</span></button>
+            </div>
+
+            <div id="requirement-tab" class="tab-content">
+                <div class="form-group">
+                    <label for="requirement-select"><i class="fas fa-clipboard-list"></i> Seleccionar Requisito:</label>
+                    <select id="requirement-select"><option value="">Seleccione un requisito...</option></select>
+                </div>
+                <button class="search-button" onclick="searchByRequirement()"><i class="fas fa-search"></i><span>Comparar entre Países</span></button>
+            </div>
+
+            <div id="filter-tab" class="tab-content">
+                 <div class="form-group">
+                    <label for="filter-checkbox-container"><i class="fas fa-tasks"></i> Seleccione los criterios que deben cumplir los países:</label>
+                    <div id="filter-checkbox-container"></div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="clear-button" onclick="clearFilters()"><i class="fas fa-times"></i> Limpiar Filtros</button>
+                    <button class="search-button" onclick="searchByFilter()"><i class="fas fa-filter"></i><span>Filtrar Países</span></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-section" class="results-section">
+            <div id="sidebar-nav" class="sidebar-nav"></div>
+            <div id="main-results-content" class="main-results-content"></div>
+        </div>
+    </div>
+    
+    <button onclick="scrollToSearch()" id="back-to-top-btn" title="Volver a la búsqueda"><i class="fas fa-arrow-up"></i></button>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p> 2025 IRENLyC — El nombre y el logotipo de este sitio web se utilizan únicamente con fines ilustrativos, como parte de un prototipo en desarrollo.</p>
+            <p style="margin-top: 16px;">
+                Si encuentras información para corregir o actualizar, por favor 
+                <a href="reportes.html" style="color: white; font-weight: 600; text-decoration: underline;">haz clic aquí para reportarla</a>.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const supabaseUrl = 'https://rhbudrqpetrzispcacyw.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoYnVkcnFwZXRyemlzcGNhY3l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1ODI4NTQsImV4cCI6MjA3NDE1ODg1NH0.6uQ2Hg1aLHAQoG3HwxJBeBbrFRGRxUilH-60CRNl3J8';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // --- MODIFICADO: Categorías para la matriz de Poblaciones Vulnerables ---
+        const categories = [ 
+            { id: 1, name: '1. Marco regulatorio general' }, 
+            { id: 2, name: '2. Investigación en mujeres embarazadas y en lactancia' }, 
+            { id: 3, name: '3. Investigación en niños, niñas y adolescentes' }, 
+            { id: 4, name: '4. Investigación en personas sin capacidad de consentir' }, 
+            { id: 5, name: '5. Investigación en pueblos originarios o comunidades indígenas' }
+        ];
+        
+        // --- MODIFICADO: Preguntas de la matriz de Poblaciones Vulnerables ---
+        const canonicalQuestions = {
+            '1.1': '¿La normativa nacional define explícitamente el concepto de "población vulnerable" o "sujeto vulnerable" en el contexto de investigación en seres humanos?',
+            '1.2': '¿La normativa incluye definiciones específicas de "riesgo mínimo" aplicables a poblaciones vulnerables?',
+            '1.3': '¿Se requieren aprobaciones o evaluaciones adicionales (más allá de ARN y CEI estándar) para estudios que incluyan poblaciones vulnerables?',
+            '1.4': '¿La normativa identifica explícitamente como vulnerables a: embarazadas, menores, personas sin capacidad de consentir, pueblos originarios y personas institucionalizadas?',
+            '2.1': '¿Está permitida la investigación en mujeres embarazadas?',
+            '2.2': '¿Está permitida la investigación en mujeres en período de lactancia?',
+            '2.3': '¿La normativa exige que la investigación en embarazadas/lactantes responda a necesidades de salud específicas de esta población o del feto/lactante?',
+            '2.4': '¿Se requiere evidencia preclínica o de seguridad previa (estudios en animales gestantes, farmacocinética, toxicidad reproductiva) antes de incluir embarazadas?',
+            '2.5': '¿El consentimiento informado debe incluir información específica sobre riesgos maternos, fetales/neonatales y efectos en la lactancia?',
+            '2.6': '¿Se requiere el consentimiento o conocimiento de la pareja/progenitor para la participación de la mujer embarazada?',
+            '2.7': '¿Existen requisitos obligatorios de seguimiento post-parto del recién nacido o de notificación de embarazos que ocurran durante el estudio?',
+            '3.1': '¿Está permitida la investigación en menores de edad?',
+            '3.2': '¿La normativa establece una edad específica que define "menor de edad" para efectos de investigación clínica?',
+            '3.3': '¿La normativa establece categorías diferenciadas por edad (neonatos, lactantes, niños, adolescentes) con requisitos distintos?',
+            '3.4': '¿Se exige que la investigación pediátrica responda a necesidades de salud propias de los menores y no pueda realizarse en adultos?',
+            '3.5': '¿Se requiere el consentimiento de ambos padres/tutores legales, o es suficiente uno solo?',
+            '3.6': '¿Se requiere obtener el asentimiento del menor además del consentimiento de los padres/tutores?',
+            '3.7': '¿La normativa establece que el rechazo o disentimiento del menor es vinculante (puede vetar su participación)?',
+            '4.1': '¿Está permitida la investigación en personas sin capacidad de otorgar consentimiento informado?',
+            '4.2': '¿La normativa define explícitamente qué constituye "incapacidad" para consentir (criterios médicos, judiciales, temporales/permanentes)?',
+            '4.3': '¿Se exige justificar por qué la investigación debe realizarse específicamente en personas sin capacidad y no en personas capaces?',
+            '4.4': '¿La normativa establece una jerarquía de representantes legales autorizados para otorgar el consentimiento sustituto?',
+            '4.5': '¿Se requiere obtener el asentimiento de la persona sin capacidad cuando sea posible evaluar su comprensión parcial?',
+            '4.6': '¿El rechazo o resistencia de la persona sin capacidad es vinculante incluso con consentimiento del representante?',
+            '5.1': '¿Existe normativa específica o sección dedicada a la investigación en pueblos originarios/comunidades indígenas?',
+            '5.2': '¿Se requiere obtener consentimiento libre, previo e informado de la comunidad o autoridad colectiva además del consentimiento individual?',
+            '5.3': '¿La normativa exige adaptaciones culturales y lingüísticas obligatorias en el proceso de consentimiento (traducción a lenguas originarias, uso de intérpretes, formatos orales/visuales)?',
+            '5.4': '¿Existen requisitos específicos sobre retorno de beneficios a la comunidad, uso de muestras biológicas/datos genéticos, o protección del conocimiento tradicional?'
+        };
+
+        const countryFlags = {
+            'Argentina': 'fi fi-ar', 'Bolivia': 'fi fi-bo', 'Brasil': 'fi fi-br', 'Chile': 'fi fi-cl', 'Colombia': 'fi fi-co', 'Costa Rica': 'fi fi-cr', 'Cuba': 'fi fi-cu', 'Ecuador': 'fi fi-ec', 'El Salvador': 'fi fi-sv', 'Guatemala': 'fi fi-gt', 'Haití': 'fi fi-ht', 'Honduras': 'fi fi-hn', 'Jamaica': 'fi fi-jm', 'México': 'fi fi-mx', 'Nicaragua': 'fi fi-ni', 'Panamá': 'fi fi-pa', 'Paraguay': 'fi fi-py', 'Perú': 'fi fi-pe', 'República Dominicana': 'fi fi-do', 'Trinidad y Tobago': 'fi fi-tt', 'Uruguay': 'fi fi-uy', 'Venezuela': 'fi fi-ve'
+        };
+        
+        // Preguntas que podrían no tener un booleano claro (según la naturaleza de la pregunta)
+        // Revisar si en la tabla SQL estas columnas booleanas existen y tienen sentido.
+        // Asumiendo que 1.1, 1.2, 1.4, 3.2, 3.3, 4.2, 4.4, 5.1 tienen booleanos válidos en la tabla.
+        // Si hay preguntas puramente descriptivas, agrégalas aquí.
+        const noBooleanQuestions = []; 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            addEventListeners();
+            populateRequirementDropdown();
+            populateFilterCheckboxes();
+        });
+
+        function addEventListeners() {
+            document.getElementById('main-results-content').addEventListener('click', function(event) {
+                const sourceToggle = event.target.closest('.source-toggle');
+                if (sourceToggle) {
+                    const sourceElement = document.getElementById(sourceToggle.dataset.target);
+                    if (sourceElement) { sourceElement.style.display = sourceElement.style.display === 'block' ? 'none' : 'block'; }
+                    return;
+                }
+                const expandButton = event.target.closest('.expand-info-button');
+                if (expandButton) {
+                    const targetElement = document.getElementById(expandButton.dataset.target);
+                    if (targetElement) {
+                        const isVisible = targetElement.style.display === 'block';
+                        targetElement.style.display = isVisible ? 'none' : 'block';
+                        expandButton.textContent = isVisible ? 'Ampliar información' : 'Ocultar información';
+                    }
+                    return;
+                }
+                
+                const viewCountryBtn = event.target.closest('.view-full-country-info-btn');
+                if (viewCountryBtn) {
+                    const countryName = viewCountryBtn.dataset.country;
+                    if (countryName) {
+                        fetchAndDisplayCountry(countryName);
+                    }
+                    return;
+                }
+            });
+
+            document.getElementById('sidebar-nav').addEventListener('click', function(event) {
+                const categoryTitle = event.target.closest('.sidebar-category-title');
+                if (categoryTitle) {
+                    const parentCategory = categoryTitle.closest('.sidebar-category');
+                    if (parentCategory) { parentCategory.classList.toggle('active'); }
+                }
+            });
+
+            document.getElementById('filter-checkbox-container').addEventListener('click', function(event) {
+                const categoryTitle = event.target.closest('.filter-category-title');
+                if (categoryTitle) {
+                    const parentCategory = categoryTitle.closest('.filter-category');
+                    if (parentCategory) { parentCategory.classList.toggle('active'); }
+                }
+            });
+        }
+        
+        function switchTab(event, tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function searchByCountry() {
+            const countryName = document.getElementById('country-select').value;
+            if (countryName) {
+                fetchAndDisplayCountry(countryName);
+            } else {
+                alert('Por favor, seleccione un país.');
+            }
+        }
+
+        async function fetchAndDisplayCountry(countryName) {
+            if (!countryName) return;
+            showLoading();
+            try {
+                // --- MODIFICADO: Consulta a la tabla 'faq_pv_rows' ---
+                const [faqRes, summaryRes, linksRes] = await Promise.all([
+                    supabaseClient.from('faq_pv_rows').select('*').eq('pais', countryName).single(),
+                    supabaseClient.from('resumen_ejecutivo').select('*').eq('pais', countryName).single(),
+                    supabaseClient.from('enlaces').select('*').eq('pais', countryName).order('question_code') 
+                ]);
+                if (faqRes.error) throw new Error(`Error en FAQ PV: ${faqRes.error.message}`);
+                if (summaryRes.error) throw new Error(`Error en Resumen: ${summaryRes.error.message}`);
+                // Links pueden fallar si no hay, no es crítico
+                
+                displayCountryResults(faqRes.data, summaryRes.data, linksRes.data || []);
+
+            } catch (error) {
+                showError(`No se pudieron cargar los datos para ${countryName}. Detalles: ${error.message}`);
+            }
+        }
+
+        function displayCountryResults(faqData, summaryData, linksData) {
+            const mainContent = document.getElementById('main-results-content');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            
+            let mainHtml = `<div class="results-content-inner">
+                
+                <div id="print-header">
+                    <img src="Logo2.png" alt="IRENLyC Logo">
+                    <h1>Información Regulatoria - Poblaciones Vulnerables</h1>
+                </div>
+
+                <div class="print-button-container"> 
+                    <button onclick="printReport()" class="search-button report-print-btn">
+                        <i class="fas fa-print"></i> <span>Imprimir/Generar PDF del Informe</span>
+                    </button>
+                </div>
+                
+                <div class="country-header">
+                    <div class="country-flag"><span class="${countryFlags[faqData.pais]}"></span></div>
+                    <div>
+                        <div class="country-name">${faqData.pais}</div>
+                        <div>${summaryData.autoridad_regulatoria}</div>
+                    </div>
+                </div>
+                <div class="executive-summary">
+                    <h2><i class="fas fa-info-circle"></i> Resumen Ejecutivo</h2>                    <div class="summary-item"><strong>Autoridad:</strong> <span>${summaryData.autoridad_regulatoria || 'No disponible'}</span></div>
+                    <div class="summary-item"><strong>Sitio Web:</strong> <a href="${summaryData.sitio_web_oficial}" target="_blank" rel="noopener noreferrer">${summaryData.sitio_web_oficial || 'No disponible'}</a></div>
+                    <div class="summary-item"><strong>Email:</strong> <span>${summaryData.correo_contacto || 'No disponible'}</span></div>
+                    <div class="summary-item"><strong>Teléfonos:</strong> <span>${summaryData.telefonos || 'No disponible'}</span></div>
+                    <div class="summary-item"><strong>Domicilio:</strong> <span>${summaryData.domicilio || 'No disponible'}</span></div>
+                </div>`;
+            
+            let sidebarHtml = `<h3><i class="fas fa-bars"></i> Navegación</h3>`;
+
+            categories.forEach(category => {
+                const categoryQuestions = Object.keys(canonicalQuestions).filter(q => q.startsWith(category.id + '.'));
+                if (categoryQuestions.length === 0) return;
+
+                mainHtml += `<h2 id="category-${category.id}" style="margin-top: 40px; color: var(--primary-blue); border-bottom: 2px solid var(--neutral-200); padding-bottom: 10px;">${category.name}</h2>`;
+                
+                sidebarHtml += `<div class="sidebar-category"><div class="sidebar-category-title"><span>${category.name}</span><i class="fas fa-chevron-right indicator-icon"></i></div><ul class="sidebar-question-list">`;
+                
+                categoryQuestions.forEach(qCode => {
+                    sidebarHtml += `<li><a href="#question-${qCode.replace(/\./g, '-')}">${qCode} ${canonicalQuestions[qCode]}</a></li>`;
+                });
+                
+                sidebarHtml += `</ul></div>`;
+
+                categoryQuestions.forEach(qCode => {
+                    // --- MODIFICADO: Clave con prefijo q_pv_ ---
+                    const dbKey = `q_pv_${qCode.replace(/\./g, '_')}`;
+                    const anchorId = `question-${qCode.replace(/\./g, '-')}`;
+                    mainHtml += `<div class="requirement" id="${anchorId}"><div class="requirement-title">${qCode} - ${canonicalQuestions[qCode]}</div>`;
+                    if (faqData[`${dbKey}_directa`]) mainHtml += `<div class="requirement-direct-answer">${faqData[`${dbKey}_directa`]}</div>`;
+                    if (faqData[`${dbKey}_ampliada`]) mainHtml += `<div class="requirement-detail">${faqData[`${dbKey}_ampliada`]}</div>`;
+                    if (faqData[`${dbKey}_fuente`]) mainHtml += `<button class="source-toggle" data-target="source-${anchorId}"><i class="fas fa-book"></i> Ver Fuente</button><div class="requirement-source" id="source-${anchorId}">${faqData[`${dbKey}_fuente`]}</div>`;
+                    mainHtml += `</div>`;
+                });
+            });
+            mainHtml += `</div>`;
+
+            mainContent.innerHTML = mainHtml;
+            sidebarNav.innerHTML = sidebarHtml;
+            sidebarNav.style.display = 'block';
+            document.getElementById('results-section').classList.add('show');
+        }
+
+        async function searchByRequirement() {
+            const requirementCode = document.getElementById('requirement-select').value;
+            if (!requirementCode) return alert('Por favor, seleccione un requisito.');
+            showLoading();
+            try {
+                // --- MODIFICADO: Clave con prefijo q_pv_ y tabla 'faq_pv_rows' ---
+                const dbKey = `q_pv_${requirementCode.replace(/\./g, '_')}`;
+                const hasBoolean = !noBooleanQuestions.includes(requirementCode);
+                let fields = `pais, ${dbKey}_directa, ${dbKey}_ampliada`;
+                if (hasBoolean) fields += `, ${dbKey}_booleano`;
+                
+                const { data, error } = await supabaseClient.from('faq_pv_rows').select(fields).order('pais');
+                if (error) throw error;
+                displayRequirementComparison(requirementCode, data, hasBoolean);
+            } catch (error) {
+                showError(`No se pudieron cargar los datos de comparación. ${error.message}`);
+            }
+        }
+
+        function displayRequirementComparison(reqCode, countries, hasBoolean) {
+            const mainContent = document.getElementById('main-results-content');
+            // --- MODIFICADO: Clave con prefijo q_pv_ ---
+            const dbKey = `q_pv_${reqCode.replace(/\./g, '_')}`;
+            let html = `<div class="results-content-inner"><div style="margin-bottom: 32px;"><h2 style="color: var(--primary-blue);">${canonicalQuestions[reqCode]}</h2><p>Comparativa entre todos los países disponibles.</p></div><div>`;
+            countries.forEach((country, index) => {
+                const directa = country[`${dbKey}_directa`] || 'Información no disponible.';
+                const ampliada = country[`${dbKey}_ampliada`];
+                const detailId = `detail-compare-${index}`;
+                let statusBadge = '';
+                if (hasBoolean) {
+                    const booleanValue = country[`${dbKey}_booleano`];
+                    if (booleanValue === true) statusBadge = '<span class="status-badge yes">✓ SÍ</span>';
+                    else if (booleanValue === false) statusBadge = '<span class="status-badge no">✗ NO</span>';
+                }
+                html += `<div class="comparison-card"><div class="comparison-card-header"><h3><span class="fi ${countryFlags[country.pais]}"></span> ${country.pais}</h3>${statusBadge}</div><div class="comparison-card-directa">${directa}</div>`;
+                if (ampliada) {
+                    html += `<div class="comparison-card-ampliada" id="${detailId}">${ampliada}</div><div class="comparison-card-footer"><button class="expand-info-button" data-target="${detailId}">Ampliar información</button></div>`;
+                }
+                html += `</div>`;
+            });
+            html += `</div></div>`;
+            mainContent.innerHTML = html;
+            document.getElementById('sidebar-nav').style.display = 'none';
+            document.getElementById('results-section').classList.add('show');
+        }
+        
+        async function searchByFilter() {
+            const checkedInputs = document.querySelectorAll('#filter-checkbox-container input:checked');
+            if (checkedInputs.length === 0) return alert('Por favor, seleccione al menos un criterio para filtrar.');
+            showLoading();
+            const selectedCriteria = Array.from(checkedInputs).map(input => ({ code: input.value, text: canonicalQuestions[input.value] }));
+            try {
+                // --- MODIFICADO: Tabla 'faq_pv_rows' y prefijo q_pv_ ---
+                let query = supabaseClient.from('faq_pv_rows').select('pais');
+                selectedCriteria.forEach(criterion => {
+                    query = query.eq(`q_pv_${criterion.code.replace(/\./g, '_')}_booleano`, true);
+                });
+                const { data: countries, error } = await query;
+                if (error) throw error;
+                displayFilteredCountries(countries, selectedCriteria);
+            } catch (error) {
+                showError(`Ocurrió un error al realizar el filtro.`);
+            }
+        }
+        
+        function displayFilteredCountries(countries, criteria) {
+            const mainContent = document.getElementById('main-results-content');
+            let html = `<div class="results-content-inner">
+                        <h2 style="color: var(--primary-blue); margin-bottom: 2rem;">Resultados del Filtro Avanzado (PV)</h2>
+                        <div style="background: var(--neutral-50); padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+                        <h4 style="margin-bottom: 12px;">Países que cumplen con TODOS los siguientes criterios:</h4>
+                        <ul style="list-style-type: none; padding-left: 0;">`;
+            criteria.forEach(c => { html += `<li><i class="fas fa-check-circle" style="color: var(--primary-green); margin-right: 8px;"></i>${c.text}</li>`; });
+            html += `</ul></div>`;
+            if (countries.length > 0) {
+                html += `<div id="filtered-countries-grid">`;
+                countries.forEach(country => {
+                    html += `<div class="filtered-country-card">
+                                <div>
+                                    <div class="fi-container"><span class="${countryFlags[country.pais]}"></span></div>
+                                    <h4 class="country-title">${country.pais}</h4>
+                                </div>
+                                <button class="view-full-country-info-btn" data-country="${country.pais}">
+                                    <i class="fas fa-file-alt"></i> Ver Ficha Completa
+                                </button>
+                             </div>`;
+                });
+                html += `</div>`;
+            } else {
+                html += `<div class="error" style="background: rgba(251, 191, 36, 0.1); color: #d97706; border-left-color: #f59e0b;">No se encontraron países que cumplan con todos los criterios seleccionados.</div>`;
+            }
+            html += `</div>`;
+            mainContent.innerHTML = html;
+            document.getElementById('sidebar-nav').style.display = 'none';
+            document.getElementById('results-section').classList.add('show');
+        }
+
+        function populateRequirementDropdown() {
+            const select = document.getElementById('requirement-select');
+            categories.forEach(category => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = category.name;
+                Object.keys(canonicalQuestions).filter(q => q.startsWith(category.id + '.')).forEach(qCode => {
+                    const option = document.createElement('option');
+                    option.value = qCode;
+                    option.textContent = `${qCode} - ${canonicalQuestions[qCode]}`;
+                    optgroup.appendChild(option);
+                });
+                select.appendChild(optgroup);
+            });
+        }
+        
+        function populateFilterCheckboxes() {
+            const container = document.getElementById('filter-checkbox-container');
+            let html = '';
+            categories.forEach(category => {
+                const booleanQuestions = Object.keys(canonicalQuestions).filter(q => q.startsWith(category.id + '.') && !noBooleanQuestions.includes(q));
+                if (booleanQuestions.length > 0) {
+                    html += `<div class="filter-category"><div class="filter-category-title"><span>${category.name}</span><i class="fas fa-chevron-right indicator-icon"></i></div><div class="filter-items-list">`;
+                    booleanQuestions.forEach(qCode => {
+                        html += `<span class="filter-item"><label><input type="checkbox" value="${qCode}">${qCode} - ${canonicalQuestions[qCode]}</label></span>`;
+                    });
+                    html += `</div></div>`;
+                }
+            });
+            container.innerHTML = html;
+        }
+        
+        function clearFilters() {
+            const checkboxes = document.querySelectorAll('#filter-checkbox-container input[type="checkbox"]');
+            checkboxes.forEach(checkbox => { checkbox.checked = false; });
+            document.getElementById('results-section').classList.remove('show');
+            document.getElementById('main-results-content').innerHTML = '';
+        }
+
+        function showLoading() {
+            const mainContent = document.getElementById('main-results-content');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            mainContent.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i><p>Cargando datos de PV...</p></div>`;
+            sidebarNav.style.display = 'none';
+            document.getElementById('results-section').classList.add('show');
+        }
+
+        function showError(message) {
+            document.getElementById('main-results-content').innerHTML = `<div class="error"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+            document.getElementById('sidebar-nav').style.display = 'none';
+            document.getElementById('results-section').classList.add('show');
+        }
+
+        const backToTopButton = document.getElementById("back-to-top-btn");
+        window.onscroll = function() { scrollFunction(); };
+        function scrollFunction() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) { backToTopButton.style.display = "block"; } else { backToTopButton.style.display = "none"; }
+        }
+        
+        function scrollToSearch() { 
+            const searchSection = document.querySelector('.search-section');
+            if (searchSection) {
+                searchSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        async function printReport() {
+            const countryName = document.querySelector('.country-name').textContent;
+            const originalTitle = document.title;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('descargas_informes')
+                    .insert({ 
+                        pais: countryName,
+                        tipo_informe: 'Poblaciones Vulnerables' // Opcional: para distinguir en la BD
+                    });
+
+                if (error) console.error('Error al registrar la descarga:', error.message);
+            } catch (e) {
+                console.error('Excepción al intentar registrar la descarga:', e);
+            }
+            
+            document.title = `IRENLyC - PV - ${countryName}`;
+            window.print();
+            setTimeout(() => { document.title = originalTitle; }, 500);
+        }
+    </script>
+</body>
+</html>
