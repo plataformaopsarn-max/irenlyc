@@ -21,8 +21,6 @@
 
     <style>
         :root {
-            /* Mismos colores que la original, quizás podrías variar el primary-blue si quieres distinguir las páginas, 
-               pero aquí mantengo la identidad visual exacta */
             --primary-blue: #1e3a8a;
             --primary-teal: #14b8a6;
             --primary-green: #10b981;
@@ -246,9 +244,9 @@
             <div id="country-tab" class="tab-content active">
                 <div class="form-group">
                     <label for="country-select"><i class="fas fa-globe-americas"></i> Seleccione un País:</label>
+                    <!-- SELECT MODIFICADO: Las opciones se llenan dinámicamente con JS -->
                     <select id="country-select">
-                        <option value="">-- Seleccione un país --</option>
-                        <option value="Argentina">Argentina</option><option value="Bolivia">Bolivia</option><option value="Brasil">Brasil</option><option value="Chile">Chile</option><option value="Colombia">Colombia</option><option value="Costa Rica">Costa Rica</option><option value="Cuba">Cuba</option><option value="Ecuador">Ecuador</option><option value="El Salvador">El Salvador</option><option value="Guatemala">Guatemala</option><option value="Haití">Haití</option><option value="Honduras">Honduras</option><option value="Jamaica">Jamaica</option><option value="México">México</option><option value="Nicaragua">Nicaragua</option><option value="Panamá">Panamá</option><option value="Paraguay">Paraguay</option><option value="Perú">Perú</option><option value="República Dominicana">República Dominicana</option><option value="Trinidad y Tobago">Trinidad y Tobago</option><option value="Uruguay">Uruguay</option><option value="Venezuela">Venezuela</option>
+                        <option value="">Cargando países...</option>
                     </select>
                 </div>
                 <button class="search-button" onclick="searchByCountry()"><i class="fas fa-search"></i><span>Consultar Requisitos</span></button>
@@ -297,7 +295,6 @@
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoYnVkcnFwZXRyemlzcGNhY3l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1ODI4NTQsImV4cCI6MjA3NDE1ODg1NH0.6uQ2Hg1aLHAQoG3HwxJBeBbrFRGRxUilH-60CRNl3J8';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-        // --- MODIFICADO: Categorías para la matriz de Poblaciones Vulnerables ---
         const categories = [ 
             { id: 1, name: '1. Marco regulatorio general' }, 
             { id: 2, name: '2. Investigación en mujeres embarazadas y en lactancia' }, 
@@ -306,7 +303,6 @@
             { id: 5, name: '5. Investigación en pueblos originarios o comunidades indígenas' }
         ];
         
-        // --- MODIFICADO: Preguntas de la matriz de Poblaciones Vulnerables ---
         const canonicalQuestions = {
             '1.1': '¿La normativa nacional define explícitamente el concepto de "población vulnerable" o "sujeto vulnerable" en el contexto de investigación en seres humanos?',
             '1.2': '¿La normativa incluye definiciones específicas de "riesgo mínimo" aplicables a poblaciones vulnerables?',
@@ -342,16 +338,13 @@
             'Argentina': 'fi fi-ar', 'Bolivia': 'fi fi-bo', 'Brasil': 'fi fi-br', 'Chile': 'fi fi-cl', 'Colombia': 'fi fi-co', 'Costa Rica': 'fi fi-cr', 'Cuba': 'fi fi-cu', 'Ecuador': 'fi fi-ec', 'El Salvador': 'fi fi-sv', 'Guatemala': 'fi fi-gt', 'Haití': 'fi fi-ht', 'Honduras': 'fi fi-hn', 'Jamaica': 'fi fi-jm', 'México': 'fi fi-mx', 'Nicaragua': 'fi fi-ni', 'Panamá': 'fi fi-pa', 'Paraguay': 'fi fi-py', 'Perú': 'fi fi-pe', 'República Dominicana': 'fi fi-do', 'Trinidad y Tobago': 'fi fi-tt', 'Uruguay': 'fi fi-uy', 'Venezuela': 'fi fi-ve'
         };
         
-        // Preguntas que podrían no tener un booleano claro (según la naturaleza de la pregunta)
-        // Revisar si en la tabla SQL estas columnas booleanas existen y tienen sentido.
-        // Asumiendo que 1.1, 1.2, 1.4, 3.2, 3.3, 4.2, 4.4, 5.1 tienen booleanos válidos en la tabla.
-        // Si hay preguntas puramente descriptivas, agrégalas aquí.
         const noBooleanQuestions = []; 
 
         document.addEventListener('DOMContentLoaded', () => {
             addEventListeners();
             populateRequirementDropdown();
             populateFilterCheckboxes();
+            populateCountryDropdown(); // Llenar el select de países dinámicamente
         });
 
         function addEventListeners() {
@@ -407,6 +400,40 @@
             document.getElementById(`${tabName}-tab`).classList.add('active');
         }
 
+        // --- NUEVA FUNCIÓN: Llenar lista de países desde Supabase ---
+        async function populateCountryDropdown() {
+            const select = document.getElementById('country-select');
+            
+            try {
+                // Consultamos solo la columna 'pais' de la tabla 'faq_pv_rows' y ordenamos alfabéticamente
+                const { data, error } = await supabaseClient
+                    .from('faq_pv_rows')
+                    .select('pais')
+                    .order('pais');
+
+                if (error) throw error;
+
+                // Limpiamos el select y ponemos la opción por defecto
+                select.innerHTML = '<option value="">-- Seleccione un país --</option>';
+
+                if (data && data.length > 0) {
+                    // Recorremos los datos y creamos las opciones
+                    data.forEach(row => {
+                        const option = document.createElement('option');
+                        option.value = row.pais;
+                        option.textContent = row.pais;
+                        select.appendChild(option);
+                    });
+                } else {
+                     select.innerHTML = '<option value="">No hay países disponibles</option>';
+                }
+
+            } catch (error) {
+                console.error('Error al cargar la lista de países:', error.message);
+                select.innerHTML = '<option value="">Error al cargar países</option>';
+            }
+        }
+
         function searchByCountry() {
             const countryName = document.getElementById('country-select').value;
             if (countryName) {
@@ -420,7 +447,6 @@
             if (!countryName) return;
             showLoading();
             try {
-                // --- MODIFICADO: Consulta a la tabla 'faq_pv_rows' ---
                 const [faqRes, summaryRes, linksRes] = await Promise.all([
                     supabaseClient.from('faq_pv_rows').select('*').eq('pais', countryName).single(),
                     supabaseClient.from('resumen_ejecutivo').select('*').eq('pais', countryName).single(),
@@ -428,7 +454,6 @@
                 ]);
                 if (faqRes.error) throw new Error(`Error en FAQ PV: ${faqRes.error.message}`);
                 if (summaryRes.error) throw new Error(`Error en Resumen: ${summaryRes.error.message}`);
-                // Links pueden fallar si no hay, no es crítico
                 
                 displayCountryResults(faqRes.data, summaryRes.data, linksRes.data || []);
 
@@ -486,7 +511,6 @@
                 sidebarHtml += `</ul></div>`;
 
                 categoryQuestions.forEach(qCode => {
-                    // --- MODIFICADO: Clave con prefijo q_pv_ ---
                     const dbKey = `q_pv_${qCode.replace(/\./g, '_')}`;
                     const anchorId = `question-${qCode.replace(/\./g, '-')}`;
                     mainHtml += `<div class="requirement" id="${anchorId}"><div class="requirement-title">${qCode} - ${canonicalQuestions[qCode]}</div>`;
@@ -509,7 +533,6 @@
             if (!requirementCode) return alert('Por favor, seleccione un requisito.');
             showLoading();
             try {
-                // --- MODIFICADO: Clave con prefijo q_pv_ y tabla 'faq_pv_rows' ---
                 const dbKey = `q_pv_${requirementCode.replace(/\./g, '_')}`;
                 const hasBoolean = !noBooleanQuestions.includes(requirementCode);
                 let fields = `pais, ${dbKey}_directa, ${dbKey}_ampliada`;
@@ -525,7 +548,6 @@
 
         function displayRequirementComparison(reqCode, countries, hasBoolean) {
             const mainContent = document.getElementById('main-results-content');
-            // --- MODIFICADO: Clave con prefijo q_pv_ ---
             const dbKey = `q_pv_${reqCode.replace(/\./g, '_')}`;
             let html = `<div class="results-content-inner"><div style="margin-bottom: 32px;"><h2 style="color: var(--primary-blue);">${canonicalQuestions[reqCode]}</h2><p>Comparativa entre todos los países disponibles.</p></div><div>`;
             countries.forEach((country, index) => {
@@ -556,7 +578,6 @@
             showLoading();
             const selectedCriteria = Array.from(checkedInputs).map(input => ({ code: input.value, text: canonicalQuestions[input.value] }));
             try {
-                // --- MODIFICADO: Tabla 'faq_pv_rows' y prefijo q_pv_ ---
                 let query = supabaseClient.from('faq_pv_rows').select('pais');
                 selectedCriteria.forEach(criterion => {
                     query = query.eq(`q_pv_${criterion.code.replace(/\./g, '_')}_booleano`, true);
@@ -675,7 +696,7 @@
                     .from('descargas_informes')
                     .insert({ 
                         pais: countryName,
-                        tipo_informe: 'Poblaciones Vulnerables' // Opcional: para distinguir en la BD
+                        tipo_informe: 'Poblaciones Vulnerables' 
                     });
 
                 if (error) console.error('Error al registrar la descarga:', error.message);
