@@ -12,7 +12,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRENLyC - Poblaciones Vulnerables</title>
+    <title>IRENLyC - Personas y grupos especiales</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -229,7 +229,7 @@
         <div>
             <h1 class="main-title">IRENLyC</h1>
             <p class="main-subtitle">Información Regulatoria para Ensayos Clínicos de Latinoamérica y Caribe</p>
-            <div class="module-tag">Módulo: Investigación con personas y grupos vulnerables</div>
+            <div class="module-tag">Módulo: Investigación con personas y grupos especiales</div>
         </div>
     </section>
 
@@ -470,7 +470,7 @@
                 
                 <div id="print-header">
                     <img src="Logo2.png" alt="IRENLyC Logo">
-                    <h1>Información Regulatoria - Poblaciones Vulnerables</h1>
+                    <h1>Información Regulatoria - Personas y grupos especiales</h1>
                 </div>
 
                 <div class="print-button-container"> 
@@ -696,7 +696,7 @@
                     .from('descargas_informes')
                     .insert({ 
                         pais: countryName,
-                        tipo_informe: 'Poblaciones Vulnerables' 
+                        tipo_informe: 'Personas y grupos especiales' 
                     });
 
                 if (error) console.error('Error al registrar la descarga:', error.message);
